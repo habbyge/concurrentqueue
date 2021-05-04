@@ -24,30 +24,35 @@
 #include "tbb_stddef.h"
 
 namespace tbb {
-    
+
 //! A mutex which does nothing
 /** A null_mutex does no operation and simulates success.
     @ingroup synchronization */
 class null_mutex : internal::mutex_copy_deprecated_and_disabled {
-public:   
-    //! Represents acquisition of a mutex.
-    class scoped_lock : internal::no_copy {   
-    public:   
-        scoped_lock() {}
-        scoped_lock( null_mutex& ) {}   
-        ~scoped_lock() {}
-        void acquire( null_mutex& ) {}
-        bool try_acquire( null_mutex& ) { return true; }
-        void release() {}
-    };
-  
-    null_mutex() {}
-    
-    // Mutex traits   
-    static const bool is_rw_mutex = false;   
-    static const bool is_recursive_mutex = true;
-    static const bool is_fair_mutex = true;
-};  
+public:
+  //! Represents acquisition of a mutex.
+  class scoped_lock : internal::no_copy {
+  public:
+    scoped_lock() {}
+
+    scoped_lock(null_mutex&) {}
+
+    ~scoped_lock() {}
+
+    void acquire(null_mutex&) {}
+
+    bool try_acquire(null_mutex&) { return true; }
+
+    void release() {}
+  };
+
+  null_mutex() {}
+
+  // Mutex traits
+  static const bool is_rw_mutex = false;
+  static const bool is_recursive_mutex = true;
+  static const bool is_fair_mutex = true;
+};
 
 }
 

@@ -1,7 +1,7 @@
 // Copyright (C) 2006  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
 #undef DLIB_RSIGNALER_EXTENSIOn_ABSTRACT_
-#ifdef DLIB_RSIGNALER_EXTENSIOn_ABSTRACT_ 
+#ifdef DLIB_RSIGNALER_EXTENSIOn_ABSTRACT_
 
 #include "threads_kernel_abstract.h"
 #include "rmutex_extension_abstract.h"

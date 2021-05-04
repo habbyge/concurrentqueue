@@ -13,61 +13,57 @@
 #include <string>
 #include "../uintn.h"
 
-namespace dlib
-{
+namespace dlib {
 
 // ----------------------------------------------------------------------------------------
 
-    void sleep (
-        unsigned long milliseconds
-    );
+void sleep(
+    unsigned long milliseconds
+);
 
 // ----------------------------------------------------------------------------------------
 
-    std::string get_current_dir (
-    );
+std::string get_current_dir(
+);
 
 // ----------------------------------------------------------------------------------------
 
-    class set_current_dir_error : public error
-    {
-    public:
-        set_current_dir_error(
-            const std::string& a
-        ): error(a) {}
-    };
+class set_current_dir_error : public error {
+public:
+  set_current_dir_error(
+      const std::string& a
+  ) : error(a) {}
+};
 
-    void set_current_dir (
-        const std::string& new_dir
-    );
-
-// ----------------------------------------------------------------------------------------
-
-    class timestamper 
-    {
-    public:
-        uint64 get_timestamp (
-        ) const;
-    };
+void set_current_dir(
+    const std::string& new_dir
+);
 
 // ----------------------------------------------------------------------------------------
 
-    class dir_create_error : public error 
-    {
-    public:
-        dir_create_error(
-            const std::string& dir_name
-        ) : 
-            error(EDIR_CREATE,"Error creating directory '" + dir_name + "'."),
-            name(dir_name)
-        {}
-        const std::string& name;
-    }; 
+class timestamper {
+public:
+  uint64 get_timestamp(
+  ) const;
+};
+
+// ----------------------------------------------------------------------------------------
+
+class dir_create_error : public error {
+public:
+  dir_create_error(
+      const std::string& dir_name
+  ) :
+      error(EDIR_CREATE, "Error creating directory '" + dir_name + "'."),
+      name(dir_name) {}
+
+  const std::string& name;
+};
 
 
-    void create_directory (
-        const std::string& dir
-    );
+void create_directory(
+    const std::string& dir
+);
 
 // ----------------------------------------------------------------------------------------
 

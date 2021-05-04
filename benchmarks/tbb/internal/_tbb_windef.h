@@ -24,7 +24,7 @@
 
 // Check that the target Windows version has all API calls requried for TBB.
 // Do not increase the version in condition beyond 0x0500 without prior discussion!
-#if defined(_WIN32_WINNT) && _WIN32_WINNT<0x0501
+#if defined(_WIN32_WINNT) && _WIN32_WINNT < 0x0501
 #error TBB is unable to run on old Windows versions; _WIN32_WINNT must be 0x0501 or greater.
 #endif
 
@@ -35,7 +35,7 @@
 
 // Workaround for the problem with MVSC headers failing to define namespace std
 namespace std {
-  using ::size_t; using ::ptrdiff_t;
+using ::size_t; using ::ptrdiff_t;
 }
 
 #define __TBB_STRING_AUX(x) #x
@@ -59,15 +59,15 @@ namespace std {
 #endif
 
 #if _MSC_VER
-    #if !__TBB_NO_IMPLICIT_LINKAGE
-        #ifdef __TBB_LIB_NAME
-	        #pragma comment(lib, __TBB_STRING(__TBB_LIB_NAME))
-        #else
-			#ifdef _DEBUG
-				#pragma comment(lib, "tbb_debug.lib")
-			#else
-				#pragma comment(lib, "tbb.lib")
-			#endif
-        #endif
-    #endif
+#if !__TBB_NO_IMPLICIT_LINKAGE
+#ifdef __TBB_LIB_NAME
+#pragma comment(lib, __TBB_STRING(__TBB_LIB_NAME))
+#else
+#ifdef _DEBUG
+#pragma comment(lib, "tbb_debug.lib")
+#else
+#pragma comment(lib, "tbb.lib")
+#endif
+#endif
+#endif
 #endif

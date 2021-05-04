@@ -29,17 +29,17 @@ namespace tbb {
 //! Block of space aligned sufficiently to construct an array T with N elements.
 /** The elements are not constructed or destroyed by this class.
     @ingroup memory_allocation */
-template<typename T,size_t N=1>
+template<typename T, size_t N = 1>
 class aligned_space {
 private:
-    typedef __TBB_TypeWithAlignmentAtLeastAsStrict(T) element_type;
-    element_type array[(sizeof(T)*N+sizeof(element_type)-1)/sizeof(element_type)];
+  typedef __TBB_TypeWithAlignmentAtLeastAsStrict(T) element_type;
+  element_type array[(sizeof(T) * N + sizeof(element_type) - 1) / sizeof(element_type)];
 public:
-    //! Pointer to beginning of array
-    T* begin() {return internal::punned_cast<T*>(this);}
+  //! Pointer to beginning of array
+  T* begin() { return internal::punned_cast<T*>(this); }
 
-    //! Pointer to one past last element in array.
-    T* end() {return begin()+N;}
+  //! Pointer to one past last element in array.
+  T* end() { return begin() + N; }
 };
 
 } // namespace tbb 

@@ -19,6 +19,7 @@
 */
 
 #include "semaphore.h"
+
 #if __TBB_USE_SRWLOCK
 #include "dynamic_link.h" // Refers to src/tbb, not include/tbb
 #include "tbb_misc.h"

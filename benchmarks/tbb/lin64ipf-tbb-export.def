@@ -21,7 +21,8 @@
 {
 global:
 
-#define __TBB_SYMBOL( sym ) sym;
+#define __TBB_SYMBOL(sym) sym;
+
 #include "lin64ipf-tbb-export.lst"
 
 local:

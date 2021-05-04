@@ -22,8 +22,11 @@
 #define __TBB_task_scheduler_observer_H
 
 #include "atomic.h"
+
 #if __TBB_TASK_ARENA
+
 #include "task_arena.h"
+
 #endif //__TBB_TASK_ARENA
 
 #if __TBB_SCHEDULER_OBSERVER
@@ -35,55 +38,58 @@ class task_scheduler_observer;
 namespace internal {
 
 class observer_proxy;
+
 class observer_list;
 
 class task_scheduler_observer_v3 {
-    friend class observer_proxy;
-    friend class observer_list;
-    friend class interface6::task_scheduler_observer;
+  friend class observer_proxy;
 
-    //! Pointer to the proxy holding this observer.
-    /** Observers are proxied by the scheduler to maintain persistent lists of them. **/
-    observer_proxy* my_proxy;
+  friend class observer_list;
 
-    //! Counter preventing the observer from being destroyed while in use by the scheduler.
-    /** Valid only when observation is on. **/
-    atomic<intptr_t> my_busy_count;
+  friend class interface6::task_scheduler_observer;
+
+  //! Pointer to the proxy holding this observer.
+  /** Observers are proxied by the scheduler to maintain persistent lists of them. **/
+  observer_proxy* my_proxy;
+
+  //! Counter preventing the observer from being destroyed while in use by the scheduler.
+  /** Valid only when observation is on. **/
+  atomic<intptr_t> my_busy_count;
 
 public:
-    //! Enable or disable observation
-    /** For local observers the method can be used only when the current thread
-        has the task scheduler initialized or is attached to an arena.
+  //! Enable or disable observation
+  /** For local observers the method can be used only when the current thread
+      has the task scheduler initialized or is attached to an arena.
 
-        Repeated calls with the same state are no-ops. **/
-    void __TBB_EXPORTED_METHOD observe( bool state=true );
+      Repeated calls with the same state are no-ops. **/
+  void __TBB_EXPORTED_METHOD observe(bool state = true);
 
-    //! Returns true if observation is enabled, false otherwise.
-    bool is_observing() const {return my_proxy!=NULL;}
+  //! Returns true if observation is enabled, false otherwise.
+  bool is_observing() const { return my_proxy != NULL; }
 
-    //! Construct observer with observation disabled.
-    task_scheduler_observer_v3() : my_proxy(NULL) { my_busy_count.store<relaxed>(0); }
+  //! Construct observer with observation disabled.
+  task_scheduler_observer_v3() : my_proxy(NULL) { my_busy_count.store<relaxed>(0); }
 
-    //! Entry notification
-    /** Invoked from inside observe(true) call and whenever a worker enters the arena 
-        this observer is associated with. If a thread is already in the arena when
-        the observer is activated, the entry notification is called before it
-        executes the first stolen task.
+  //! Entry notification
+  /** Invoked from inside observe(true) call and whenever a worker enters the arena
+      this observer is associated with. If a thread is already in the arena when
+      the observer is activated, the entry notification is called before it
+      executes the first stolen task.
 
-        Obsolete semantics. For global observers it is called by a thread before
-        the first steal since observation became enabled. **/
-    virtual void on_scheduler_entry( bool /*is_worker*/ ) {} 
+      Obsolete semantics. For global observers it is called by a thread before
+      the first steal since observation became enabled. **/
+  virtual void on_scheduler_entry(bool /*is_worker*/) {}
 
-    //! Exit notification
-    /** Invoked from inside observe(false) call and whenever a worker leaves the
-        arena this observer is associated with.
+  //! Exit notification
+  /** Invoked from inside observe(false) call and whenever a worker leaves the
+      arena this observer is associated with.
 
-        Obsolete semantics. For global observers it is called by a thread before
-        the first steal since observation became enabled. **/
-    virtual void on_scheduler_exit( bool /*is_worker*/ ) {}
+      Obsolete semantics. For global observers it is called by a thread before
+      the first steal since observation became enabled. **/
+  virtual void on_scheduler_exit(bool /*is_worker*/) {}
 
-    //! Destructor automatically switches observation off if it is enabled.
-    virtual ~task_scheduler_observer_v3() { if(my_proxy) observe(false);}
+  //! Destructor automatically switches observation off if it is enabled.
+  virtual ~task_scheduler_observer_v3() { if (my_proxy) observe(false); }
 };
 
 } // namespace internal

@@ -8,7 +8,7 @@
 
 // ----------------------------------------------------------------------------------------
 
-#define TIME_THIS_TO(_tt_op,_tt_out)                                                                            \
+#define TIME_THIS_TO(_tt_op, _tt_out)                                                                            \
     {                                                                                                           \
         auto _tt_start = std::chrono::high_resolution_clock::now();                                             \
         {_tt_op;}                                                                                               \

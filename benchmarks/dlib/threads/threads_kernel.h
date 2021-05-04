@@ -10,7 +10,9 @@
 #endif
 
 #ifndef WIN32
+
 #include "posix.h"
+
 #endif
 
 #endif // DLIB_THREADs_KERNEL_

@@ -18,17 +18,20 @@
 #include <boost/mpl/has_key_fwd.hpp>
 #include <boost/mpl/aux_/traits_lambda_spec.hpp>
 
-namespace boost { namespace mpl {
+namespace boost {
+namespace mpl {
 
 // no default implementation; the definition is needed to make MSVC happy 
 
-template< typename Tag > struct has_key_impl
-{
-    template< typename AssociativeSequence, typename Key > struct apply;
+template<typename Tag>
+struct has_key_impl {
+  template<typename AssociativeSequence, typename Key>
+  struct apply;
 };
 
 BOOST_MPL_ALGORITM_TRAITS_LAMBDA_SPEC(2,has_key_impl)
 
-}}
+}
+}
 
 #endif // BOOST_MPL_AUX_HAS_KEY_IMPL_HPP_INCLUDED

@@ -25,7 +25,7 @@
 
 #   include <boost/preprocessor/cat.hpp>
 
-#   define BOOST_MPL_PP_PARAMS(n,p) \
+#   define BOOST_MPL_PP_PARAMS(n, p) \
     BOOST_PP_CAT(BOOST_MPL_PP_PARAMS_,n)(p) \
     /**/
 
@@ -60,6 +60,6 @@
         ) \
     /**/
 
-#endif 
+#endif
 
 #endif // BOOST_MPL_AUX_PREPROCESSOR_PARAMS_HPP_INCLUDED

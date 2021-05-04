@@ -16,36 +16,36 @@
 #include "base.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
-enum memory_order
-{
-    mo_relaxed,
-    mo_consume,
-    mo_acquire,
-    mo_release,
-    mo_acq_rel,
-    mo_seq_cst,
+enum memory_order {
+  mo_relaxed,
+  mo_consume,
+  mo_acquire,
+  mo_release,
+  mo_acq_rel,
+  mo_seq_cst,
 };
 
 
-
-
-inline char const* format(memory_order mo)
-{
-    switch (mo)
-    {
-    case mo_relaxed: return "relaxed";
-    case mo_consume: return "consume";
-    case mo_acquire: return "acquire";
-    case mo_release: return "release";
-    case mo_acq_rel: return "acq_rel";
-    case mo_seq_cst: return "seq_cst";
-    }
-    RL_VERIFY(!"invalid value of memory order");
-    throw std::logic_error("invalid value of memory order");
+inline char const* format(memory_order mo) {
+  switch (mo) {
+    case mo_relaxed:
+      return "relaxed";
+    case mo_consume:
+      return "consume";
+    case mo_acquire:
+      return "acquire";
+    case mo_release:
+      return "release";
+    case mo_acq_rel:
+      return "acq_rel";
+    case mo_seq_cst:
+      return "seq_cst";
+  }
+  RL_VERIFY(!"invalid value of memory order");
+  throw std::logic_error("invalid value of memory order");
 }
 
 

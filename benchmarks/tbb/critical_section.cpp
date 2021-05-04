@@ -22,10 +22,10 @@
 #include "itt_notify.h"
 
 namespace tbb {
-    namespace internal {
+namespace internal {
 
 void critical_section_v4::internal_construct() {
-    ITT_SYNC_CREATE(&my_impl, _T("ppl::critical_section"), _T(""));
+  ITT_SYNC_CREATE(&my_impl, _T("ppl::critical_section"), _T(""));
 }
 }  // namespace internal
 }  // namespace tbb

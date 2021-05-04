@@ -11,7 +11,9 @@
 #endif
 
 #ifndef WIN32
+
 #include "misc_api/posix.h"
+
 #endif
 
 #include "misc_api/misc_api_shared.h"

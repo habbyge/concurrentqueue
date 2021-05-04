@@ -22,8 +22,7 @@ namespace moodycamel { typedef std::uint64_t SystemTime; }
 namespace moodycamel { typedef timespec SystemTime; }
 #endif
 
-namespace moodycamel
-{
+namespace moodycamel {
 void sleep(int milliseconds);
 
 SystemTime getSystemTime();

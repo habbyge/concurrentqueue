@@ -24,6 +24,4 @@
 #include "cli_var.hpp"
 
 
-
-
 #endif

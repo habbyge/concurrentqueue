@@ -23,13 +23,16 @@
 /** @file */
 
 #include <stddef.h> /* Need ptrdiff_t and size_t from here. */
+
 #if !_MSC_VER
+
 #include <stdint.h> /* Need intptr_t from here. */
+
 #endif
 
-#if !defined(__cplusplus) && __ICC==1100
-    #pragma warning (push)
-    #pragma warning (disable: 991)
+#if !defined(__cplusplus) && __ICC == 1100
+#pragma warning (push)
+#pragma warning (disable: 991)
 #endif
 
 #ifdef __cplusplus
@@ -44,60 +47,60 @@ extern "C" {
 
 /** The "malloc" analogue to allocate block of memory of size bytes.
   * @ingroup memory_allocation */
-void * __TBB_EXPORTED_FUNC scalable_malloc (size_t size);
+void* __TBB_EXPORTED_FUNC scalable_malloc(size_t size);
 
 /** The "free" analogue to discard a previously allocated piece of memory.
     @ingroup memory_allocation */
-void   __TBB_EXPORTED_FUNC scalable_free (void* ptr);
+void   __TBB_EXPORTED_FUNC scalable_free(void* ptr);
 
 /** The "realloc" analogue complementing scalable_malloc.
     @ingroup memory_allocation */
-void * __TBB_EXPORTED_FUNC scalable_realloc (void* ptr, size_t size);
+void* __TBB_EXPORTED_FUNC scalable_realloc(void* ptr, size_t size);
 
 /** The "calloc" analogue complementing scalable_malloc.
     @ingroup memory_allocation */
-void * __TBB_EXPORTED_FUNC scalable_calloc (size_t nobj, size_t size);
+void* __TBB_EXPORTED_FUNC scalable_calloc(size_t nobj, size_t size);
 
 /** The "posix_memalign" analogue.
     @ingroup memory_allocation */
-int __TBB_EXPORTED_FUNC scalable_posix_memalign (void** memptr, size_t alignment, size_t size);
+int __TBB_EXPORTED_FUNC scalable_posix_memalign(void** memptr, size_t alignment, size_t size);
 
 /** The "_aligned_malloc" analogue.
     @ingroup memory_allocation */
-void * __TBB_EXPORTED_FUNC scalable_aligned_malloc (size_t size, size_t alignment);
+void* __TBB_EXPORTED_FUNC scalable_aligned_malloc(size_t size, size_t alignment);
 
 /** The "_aligned_realloc" analogue.
     @ingroup memory_allocation */
-void * __TBB_EXPORTED_FUNC scalable_aligned_realloc (void* ptr, size_t size, size_t alignment);
+void* __TBB_EXPORTED_FUNC scalable_aligned_realloc(void* ptr, size_t size, size_t alignment);
 
 /** The "_aligned_free" analogue.
     @ingroup memory_allocation */
-void __TBB_EXPORTED_FUNC scalable_aligned_free (void* ptr);
+void __TBB_EXPORTED_FUNC scalable_aligned_free(void* ptr);
 
 /** The analogue of _msize/malloc_size/malloc_usable_size.
     Returns the usable size of a memory block previously allocated by scalable_*,
     or 0 (zero) if ptr does not point to such a block.
     @ingroup memory_allocation */
-size_t __TBB_EXPORTED_FUNC scalable_msize (void* ptr);
+size_t __TBB_EXPORTED_FUNC scalable_msize(void* ptr);
 
 /* Results for scalable_allocation_* functions */
 typedef enum {
-    TBBMALLOC_OK,
-    TBBMALLOC_INVALID_PARAM,
-    TBBMALLOC_UNSUPPORTED,
-    TBBMALLOC_NO_MEMORY,
-    TBBMALLOC_NO_EFFECT
+  TBBMALLOC_OK,
+  TBBMALLOC_INVALID_PARAM,
+  TBBMALLOC_UNSUPPORTED,
+  TBBMALLOC_NO_MEMORY,
+  TBBMALLOC_NO_EFFECT
 } ScalableAllocationResult;
 
 /* Setting TBB_MALLOC_USE_HUGE_PAGES environment variable to 1 enables huge pages.
    scalable_allocation_mode call has priority over environment variable. */
 typedef enum {
-    TBBMALLOC_USE_HUGE_PAGES,  /* value turns using huge pages on and off */
-    /* deprecated, kept for backward compatibility only */
-    USE_HUGE_PAGES = TBBMALLOC_USE_HUGE_PAGES,
-    /* try to limit memory consumption value Bytes, clean internal buffers
-       if limit is exceeded, but not prevents from requesting memory from OS */
-    TBBMALLOC_SET_SOFT_HEAP_LIMIT
+  TBBMALLOC_USE_HUGE_PAGES,  /* value turns using huge pages on and off */
+  /* deprecated, kept for backward compatibility only */
+  USE_HUGE_PAGES = TBBMALLOC_USE_HUGE_PAGES,
+  /* try to limit memory consumption value Bytes, clean internal buffers
+     if limit is exceeded, but not prevents from requesting memory from OS */
+  TBBMALLOC_SET_SOFT_HEAP_LIMIT
 } AllocationModeParam;
 
 /** Set TBB allocator-specific allocation modes.
@@ -105,18 +108,18 @@ typedef enum {
 int __TBB_EXPORTED_FUNC scalable_allocation_mode(int param, intptr_t value);
 
 typedef enum {
-    /* Clean internal allocator buffers for all threads.
-       Returns TBBMALLOC_NO_EFFECT if no buffers cleaned,
-       TBBMALLOC_OK if some memory released from buffers. */
-    TBBMALLOC_CLEAN_ALL_BUFFERS,
-    /* Clean internal allocator buffer for current thread only.
-       Return values same as for TBBMALLOC_CLEAN_ALL_BUFFERS. */
-    TBBMALLOC_CLEAN_THREAD_BUFFERS
+  /* Clean internal allocator buffers for all threads.
+     Returns TBBMALLOC_NO_EFFECT if no buffers cleaned,
+     TBBMALLOC_OK if some memory released from buffers. */
+  TBBMALLOC_CLEAN_ALL_BUFFERS,
+  /* Clean internal allocator buffer for current thread only.
+     Return values same as for TBBMALLOC_CLEAN_ALL_BUFFERS. */
+  TBBMALLOC_CLEAN_THREAD_BUFFERS
 } ScalableAllocationCmd;
 
 /** Call TBB allocator-specific commands.
     @ingroup memory_allocation */
-int __TBB_EXPORTED_FUNC scalable_allocation_command(int cmd, void *param);
+int __TBB_EXPORTED_FUNC scalable_allocation_command(int cmd, void* param);
 
 #ifdef __cplusplus
 } /* extern "C" */
@@ -197,23 +200,23 @@ bool  pool_free(MemoryPool *memPool, void *object);
 
 /* Ensure that including this header does not cause implicit linkage with TBB */
 #ifndef __TBB_NO_IMPLICIT_LINKAGE
-    #define __TBB_NO_IMPLICIT_LINKAGE 1
-    #include "tbb_stddef.h"
-    #undef  __TBB_NO_IMPLICIT_LINKAGE
+#define __TBB_NO_IMPLICIT_LINKAGE 1
+#include "tbb_stddef.h"
+#undef  __TBB_NO_IMPLICIT_LINKAGE
 #else
-    #include "tbb_stddef.h"
+#include "tbb_stddef.h"
 #endif
 
 #if __TBB_ALLOCATOR_CONSTRUCT_VARIADIC
- #include <utility> // std::forward
+#include <utility> // std::forward
 #endif
 
 namespace tbb {
 
 #if _MSC_VER && !defined(__INTEL_COMPILER)
     // Workaround for erroneous "unreferenced parameter" warning in method destroy.
-    #pragma warning (push)
-    #pragma warning (disable: 4100)
+#pragma warning (push)
+#pragma warning (disable: 4100)
 #endif
 
 //! Meets "allocator" requirements of ISO C++ Standard, Section 20.1.5
@@ -270,7 +273,7 @@ public:
 };
 
 #if _MSC_VER && !defined(__INTEL_COMPILER)
-    #pragma warning (pop)
+#pragma warning (pop)
 #endif // warning 4100 is back
 
 //! Analogous to std::allocator<void>, as defined in ISO C++ Standard, Section 20.4.1
@@ -295,25 +298,25 @@ inline bool operator!=( const scalable_allocator<T>&, const scalable_allocator<U
 } // namespace tbb
 
 #if _MSC_VER
-    #if (__TBB_BUILD || __TBBMALLOC_BUILD) && !defined(__TBBMALLOC_NO_IMPLICIT_LINKAGE)
-        #define __TBBMALLOC_NO_IMPLICIT_LINKAGE 1
-    #endif
+#if (__TBB_BUILD || __TBBMALLOC_BUILD) && !defined(__TBBMALLOC_NO_IMPLICIT_LINKAGE)
+#define __TBBMALLOC_NO_IMPLICIT_LINKAGE 1
+#endif
 
-    #if !__TBBMALLOC_NO_IMPLICIT_LINKAGE
-        #ifdef _DEBUG
-            #pragma comment(lib, "tbbmalloc_debug.lib")
-        #else
-            #pragma comment(lib, "tbbmalloc.lib")
-        #endif
-    #endif
+#if !__TBBMALLOC_NO_IMPLICIT_LINKAGE
+#ifdef _DEBUG
+#pragma comment(lib, "tbbmalloc_debug.lib")
+#else
+#pragma comment(lib, "tbbmalloc.lib")
+#endif
+#endif
 
 
 #endif
 
 #endif /* __cplusplus */
 
-#if !defined(__cplusplus) && __ICC==1100
-    #pragma warning (pop)
+#if !defined(__cplusplus) && __ICC == 1100
+#pragma warning (pop)
 #endif // ICC 11.0 warning 991 is back
 
 #endif /* __TBB_scalable_allocator_H */

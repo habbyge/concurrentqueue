@@ -23,7 +23,8 @@
 #include <boost/mpl/aux_/config/msvc.hpp>
 #include <boost/mpl/aux_/config/workaround.hpp>
 
-namespace boost { namespace mpl {
+namespace boost {
+namespace mpl {
 
 // default implementation - returns 'Sequence::size' if sequence has a 'size'
 // member, and -1 otherwise; conrete sequences might override it by 
@@ -71,17 +72,17 @@ struct O1_size_impl
 
 #   else // BOOST_MSVC
 
-template< typename Tag >
-struct O1_size_impl
-{
-    template< typename Sequence > struct apply
-        : long_<-1>
-        {
-        };
+template<typename Tag>
+struct O1_size_impl {
+  template<typename Sequence>
+  struct apply
+      : long_<-1> {
+  };
 };
 
 #   endif
 
-}}
+}
+}
 
 #endif // BOOST_MPL_O1_SIZE_IMPL_HPP_INCLUDED

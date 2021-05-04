@@ -1,7 +1,7 @@
 // Copyright (C) 2007  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
 #undef DLIB_THREADED_OBJECT_EXTENSIOn_ABSTRACT_
-#ifdef DLIB_THREADED_OBJECT_EXTENSIOn_ABSTRACT_ 
+#ifdef DLIB_THREADED_OBJECT_EXTENSIOn_ABSTRACT_
 
 #include "threads_kernel_abstract.h"
 

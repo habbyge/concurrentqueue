@@ -18,177 +18,172 @@
 #pragma warning(disable : 4355)
 #endif // _MSC_VER
 
-namespace dlib
-{
+namespace dlib {
 
 // ----------------------------------------------------------------------------------------
 
-    class timeout 
-    {
-        /*!
-            INITIAL VALUE
-                - b == a pointer to some kind of bind object
+class timeout {
+  /*!
+      INITIAL VALUE
+          - b == a pointer to some kind of bind object
 
-            CONVENTION
-                - b == a pointer to some kind of bind object
-        !*/
+      CONVENTION
+          - b == a pointer to some kind of bind object
+  !*/
 
-        class bind
-        {
-        public:
-            virtual void go() = 0;
-            virtual ~bind() {}
-        };
+  class bind {
+  public:
+    virtual void go() = 0;
 
-        template <typename T>
-        class functor : public bind
-        {
-        public:
-            functor(const T& f) : function(f) {}
-            T function;
-            void go() { function(); }
-        };
+    virtual ~bind() {}
+  };
 
-        template <typename T, typename R>
-        class zero : public bind
-        {
-        public:
-            T* object;
-            R (T::*callback_function)();
-            void go() { (object->*callback_function)(); }
+  template<typename T>
+  class functor : public bind {
+  public:
+    functor(const T& f) : function(f) {}
 
-        };
+    T function;
 
-        template <typename T, typename R, typename U>
-        class one : public bind
-        {
-        public:
-            T* object;
-            R (T::*callback_function)(U);
-            U val;
-            void go() { (object->*callback_function)(val); }
-        };
+    void go() { function(); }
+  };
 
-    public:
+  template<typename T, typename R>
+  class zero : public bind {
+  public:
+    T* object;
 
-        // This typedef is here for backwards compatibility with previous versions of dlib.
-        typedef timeout kernel_1a;
+    R (T::*callback_function)();
 
-        template <
-            typename T
-            >
-        timeout (
-            T callback_function,
-            unsigned long ms_to_timeout
-        ) :
-            t(*this,&timeout::trigger_timeout)
-        {
-            b = new functor<T>(callback_function);
-            t.set_delay_time(ms_to_timeout);
-            t.start();
-        }
+    void go() { (object->*callback_function)(); }
 
-        template <
-            typename T
-            >
-        timeout (  
-            T& object,
-            void (T::*callback_function)(),
-            unsigned long ms_to_timeout
-        ): 
-            t(*this,&timeout::trigger_timeout)
-        {
-            zero<T,void>* B = new zero<T,void>;
-            b = B;
-            B->object = &object;
-            B->callback_function = callback_function;
-            t.set_delay_time(ms_to_timeout);
-            t.start();
-        }
+  };
 
-        template <
-            typename T,
-            typename U
-            >
-        timeout (  
-            T& object,
-            void (T::*callback_function)(U callback_function_argument),
-            unsigned long ms_to_timeout,
-            U callback_function_argument
-        ): 
-            t(*this,&timeout::trigger_timeout)
-        {
-            one<T,void,U>* B = new one<T,void,U>;
-            b = B;
-            B->object = &object; 
-            B->callback_function = callback_function;
-            B->val = callback_function_argument;
-            t.set_delay_time(ms_to_timeout);
-            t.start();
-        }
+  template<typename T, typename R, typename U>
+  class one : public bind {
+  public:
+    T* object;
 
-        template <
-            typename T
-            >
-        timeout (  
-            T& object,
-            int (T::*callback_function)(),
-            unsigned long ms_to_timeout
-        ): 
-            t(*this,&timeout::trigger_timeout)
-        {
-            zero<T,int>* B = new zero<T,int>;
-            b = B;
-            B->object = &object;
-            B->callback_function = callback_function;
-            t.set_delay_time(ms_to_timeout);
-            t.start();
-        }
+    R (T::*callback_function)(U);
 
-        template <
-            typename T,
-            typename U
-            >
-        timeout (  
-            T& object,
-            int (T::*callback_function)(U callback_function_argument),
-            unsigned long ms_to_timeout,
-            U callback_function_argument
-        ): 
-            t(*this,&timeout::trigger_timeout)
-        {
-            one<T,int,U>* B = new one<T,int,U>;
-            b = B;
-            B->object = &object; 
-            B->callback_function = callback_function;
-            B->val = callback_function_argument;
-            t.set_delay_time(ms_to_timeout);
-            t.start();
-        }
+    U val;
 
-        virtual ~timeout (
-        )
-        {
-            t.stop_and_wait();
-            delete b;
-        }
+    void go() { (object->*callback_function)(val); }
+  };
 
-    private:
+public:
 
-        void trigger_timeout ()
-        {
-            b->go();
-            t.stop();
-        }
+  // This typedef is here for backwards compatibility with previous versions of dlib.
+  typedef timeout kernel_1a;
 
-        dlib::timer<timeout> t;
-        bind* b;
+  template<
+      typename T
+  >
+  timeout(
+      T callback_function,
+      unsigned long ms_to_timeout
+  ) :
+      t(*this, &timeout::trigger_timeout) {
+    b = new functor<T>(callback_function);
+    t.set_delay_time(ms_to_timeout);
+    t.start();
+  }
 
-        // restricted functions
-        timeout(const timeout&);        // copy constructor
-        timeout& operator=(const timeout&);    // assignment operator
+  template<
+      typename T
+  >
+  timeout(
+      T& object,
+      void (T::*callback_function)(),
+      unsigned long ms_to_timeout
+  ):
+      t(*this, &timeout::trigger_timeout) {
+    zero<T, void>* B = new zero<T, void>;
+    b = B;
+    B->object = &object;
+    B->callback_function = callback_function;
+    t.set_delay_time(ms_to_timeout);
+    t.start();
+  }
 
-    };    
+  template<
+      typename T,
+      typename U
+  >
+  timeout(
+      T& object,
+      void (T::*callback_function)(U callback_function_argument),
+      unsigned long ms_to_timeout,
+      U callback_function_argument
+  ):
+      t(*this, &timeout::trigger_timeout) {
+    one<T, void, U>* B = new one<T, void, U>;
+    b = B;
+    B->object = &object;
+    B->callback_function = callback_function;
+    B->val = callback_function_argument;
+    t.set_delay_time(ms_to_timeout);
+    t.start();
+  }
+
+  template<
+      typename T
+  >
+  timeout(
+      T& object,
+      int (T::*callback_function)(),
+      unsigned long ms_to_timeout
+  ):
+      t(*this, &timeout::trigger_timeout) {
+    zero<T, int>* B = new zero<T, int>;
+    b = B;
+    B->object = &object;
+    B->callback_function = callback_function;
+    t.set_delay_time(ms_to_timeout);
+    t.start();
+  }
+
+  template<
+      typename T,
+      typename U
+  >
+  timeout(
+      T& object,
+      int (T::*callback_function)(U callback_function_argument),
+      unsigned long ms_to_timeout,
+      U callback_function_argument
+  ):
+      t(*this, &timeout::trigger_timeout) {
+    one<T, int, U>* B = new one<T, int, U>;
+    b = B;
+    B->object = &object;
+    B->callback_function = callback_function;
+    B->val = callback_function_argument;
+    t.set_delay_time(ms_to_timeout);
+    t.start();
+  }
+
+  virtual ~timeout(
+  ) {
+    t.stop_and_wait();
+    delete b;
+  }
+
+private:
+
+  void trigger_timeout() {
+    b->go();
+    t.stop();
+  }
+
+  dlib::timer<timeout> t;
+  bind* b;
+
+  // restricted functions
+  timeout(const timeout&);        // copy constructor
+  timeout& operator=(const timeout&);    // assignment operator
+
+};
 
 // ----------------------------------------------------------------------------------------
 

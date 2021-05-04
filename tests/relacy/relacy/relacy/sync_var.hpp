@@ -17,47 +17,40 @@
 #include "foreach.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
 template<thread_id_t thread_count>
-class sync_var : nocopy<>
-{
+class sync_var : nocopy<> {
 public:
-    sync_var()
-    {
-        iteration_begin();
-    }
+  sync_var() {
+    iteration_begin();
+  }
 
-    void iteration_begin()
-    {
-        foreach<thread_count>(order_, &assign_zero);
-    }
+  void iteration_begin() {
+    foreach<thread_count>(order_, &assign_zero);
+  }
 
-    void acquire(thread_info_base* th)
-    {
-        th->own_acq_rel_order_ += 1;
-        foreach<thread_count>(th->acq_rel_order_, order_, &assign_max);
-    }
+  void acquire(thread_info_base* th) {
+    th->own_acq_rel_order_ += 1;
+    foreach<thread_count>(th->acq_rel_order_, order_, &assign_max);
+  }
 
-    void release(thread_info_base* th)
-    {
-        th->own_acq_rel_order_ += 1;
-        foreach<thread_count>(order_, th->acq_rel_order_, &assign_max);
-    }
+  void release(thread_info_base* th) {
+    th->own_acq_rel_order_ += 1;
+    foreach<thread_count>(order_, th->acq_rel_order_, &assign_max);
+  }
 
-    void acq_rel(thread_info_base* th)
-    {
-        th->own_acq_rel_order_ += 1;
-        timestamp_t* acq_rel_order = th->acq_rel_order_;
-        timestamp_t* order = order_;
-        foreach<thread_count>(acq_rel_order, order, &assign_max);
-        foreach<thread_count>(order, acq_rel_order, &assign_max);
-    }
+  void acq_rel(thread_info_base* th) {
+    th->own_acq_rel_order_ += 1;
+    timestamp_t* acq_rel_order = th->acq_rel_order_;
+    timestamp_t* order = order_;
+    foreach<thread_count>(acq_rel_order, order, &assign_max);
+    foreach<thread_count>(order, acq_rel_order, &assign_max);
+  }
 
 private:
-    timestamp_t order_ [thread_count];
+  timestamp_t order_[thread_count];
 };
 
 

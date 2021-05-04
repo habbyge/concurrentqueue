@@ -14,8 +14,7 @@
 #endif
 
 
-namespace rl
-{
+namespace rl {
 
 /*
 inline void context::disable_history()
@@ -32,41 +31,34 @@ inline void context::enable_history()
 }
 */
 
-inline void context::disable_preemption()
-{
-    disable_preemption_ += 1;
+inline void context::disable_preemption() {
+  disable_preemption_ += 1;
 }
 
-inline void context::enable_preemption()
-{
-    disable_preemption_ -= 1;
+inline void context::enable_preemption() {
+  disable_preemption_ -= 1;
 }
 
-inline int context::get_errno()
-{
-    RL_VERIFY(threadx_);
-    return threadx_->errno_;
+inline int context::get_errno() {
+  RL_VERIFY(threadx_);
+  return threadx_->errno_;
 }
 
-inline void context::set_errno(int value)
-{
-    RL_VERIFY(threadx_);
-    threadx_->errno_ = value;
+inline void context::set_errno(int value) {
+  RL_VERIFY(threadx_);
+  threadx_->errno_ = value;
 }
 
 template<typename event_t>
-void context::exec_log(debug_info_param info, event_t const& ev)
-{
-    RL_VERIFY(collecting_history());
-    disable_alloc_ += 1;
-    history_.exec_log(threadx_ ? threadx_->index_ : -1, info, ev, params_.output_history);
-    disable_alloc_ -= 1;
+void context::exec_log(debug_info_param info, event_t const& ev) {
+  RL_VERIFY(collecting_history());
+  disable_alloc_ += 1;
+  history_.exec_log(threadx_ ? threadx_->index_ : -1, info, ev, params_.output_history);
+  disable_alloc_ -= 1;
 }
 
 
-
 }
-
 
 
 #endif

@@ -1,99 +1,115 @@
-Here is a recent version of the revised pc_sample.c which uses inline x86
-ASM and compiles under VC++ (I am planning on coding the entire thing in
-pure assembly language):
+Here is
+a recent
+version of
+the revised
+pc_sample.
+c which
+uses inline x86
+ASMand compiles
+under VC
+++ (
+I am
+planning on
+coding the
+entire thing
+in
+    pure
+assembly language
+):
 ____________________________________________________________________
-#if ! defined(PC_SAMPLE_INCLUDE_H)
+#if !defined(PC_SAMPLE_INCLUDE_H)
 #   define PC_SAMPLE_INCLUDE_H
 #   pragma warning(push)
 #   pragma warning (disable : 4100 4505 4706)
 #   if defined(__cplusplus)
-      extern "C" {
+extern "C" {
 #   endif
 /*===========================================================*/
 
 /* Very Simple x86 Atomic Operations API & Implmentation
 _____________________________________________________________*/
-typedef __int32 atomicword;
+typedef __int32
+atomicword;
 typedef atomicword volatile* const atomicword_pthis;
 
 static int
 x86_DWCASPTR(
- void volatile* const,
- void* const,
- void const* const
+    void volatile* const,
+    void* const,
+    void const* const
 );
 
 static atomicword
 x86_XADDWORD(
- atomicword_pthis,
- atomicword const
+    atomicword_pthis,
+    atomicword const
 );
 
 static atomicword
 x86_XCHGWORD(
- atomicword_pthis,
- atomicword const
+    atomicword_pthis,
+    atomicword const
 );
 
 __declspec(naked) int
 x86_DWCASPTR(
- void volatile* const _pthis,
- void* const pcmp,
- void const* const pxhcg
+    void volatile* const _pthis,
+    void* const pcmp,
+    void const* const pxhcg
 ) {
-  _asm {
-    PUSH ESI
-    PUSH EBX
-    MOV ESI, [ESP + 16]
-    MOV EAX, [ESI]
-    MOV EDX, [ESI + 4]
-    MOV ESI, [ESP + 20]
-    MOV EBX, [ESI]
-    MOV ECX, [ESI + 4]
-    MOV ESI, [ESP + 12]
-    LOCK CMPXCHG8B QWORD PTR [ESI]
-    JNE x86_DWCASPTR_failed
-    MOV EAX, 1
-    POP EBX
-    POP ESI
-    RET
+  _asm{
+      PUSH ESI
+      PUSH EBX
+      MOV ESI,[ESP + 16]
+      MOV EAX,[ESI]
+      MOV EDX,[ESI + 4]
+      MOV ESI,[ESP + 20]
+      MOV EBX,[ESI]
+      MOV ECX,[ESI + 4]
+      MOV ESI,[ESP + 12]
+      LOCK CMPXCHG8B QWORD PTR[ESI]
+      JNE x86_DWCASPTR_failed
+      MOV EAX, 1
+      POP EBX
+      POP ESI
+      RET
 
-x86_DWCASPTR_failed:
-    MOV ESI, [ESP + 16]
-    MOV [ESI], EAX
-    MOV [ESI + 4], EDX
-    MOV EAX, 0
-    POP EBX
-    POP ESI
-    RET
+      x86_DWCASPTR_failed:
+      MOV ESI,[ESP + 16]
+      MOV[ESI], EAX
+      MOV[ESI + 4], EDX
+      MOV EAX, 0
+      POP EBX
+      POP ESI
+      RET
   }
 
 }
 
 __declspec(naked) atomicword
 x86_XADDWORD(
- atomicword_pthis _pthis,
- atomicword const value
+    atomicword_pthis _pthis,
+    atomicword const value
 ) {
-  _asm {
-    MOV EDX, [ESP + 4]
-    MOV EAX, [ESP + 8]
-    LOCK XADD [EDX], EAX
-    RET
+  _asm{
+      MOV EDX,[ESP + 4]
+      MOV EAX,[ESP + 8]
+      LOCK XADD[EDX], EAX
+      RET
   }
 
 }
 
 __declspec(naked) atomicword
 x86_XCHGWORD(
- atomicword_pthis _pthis,
- atomicword const value
+    atomicword_pthis _pthis,
+    atomicword const value
 ) {
-  _asm {
-    MOV EDX, [ESP + 4]
-    MOV EAX, [ESP + 8]
-    XCHG [EDX], EAX
-    RET
+  _asm{
+      MOV EDX,[ESP + 4]
+      MOV EAX,[ESP + 8]
+      XCHG[EDX], EAX
+      RET
   }
 
 }
@@ -115,8 +131,11 @@ x86_XCHGWORD(
 _____________________________________________________________*/
 #include <stddef.h>
 #include <assert.h>
-#if ! defined(NDEBUG)
+
+#if !defined(NDEBUG)
+
 # include <stdio.h>
+
 #endif
 
 #define CONTAINER_OF(mp_this, mp_type, mp_member) ( \
@@ -126,7 +145,9 @@ _____________________________________________________________*/
 
 typedef struct pc_region_s pc_region, pc_node;
 typedef struct pc_master_s pc_master;
-typedef void (pc_fp_dtor) (pc_node*);
+
+typedef void (pc_fp_dtor)(pc_node*);
+
 typedef struct pc_sys_anchor_s pc_sys_anchor;
 
 struct pc_sys_anchor_s {
@@ -155,56 +176,56 @@ struct pc_master_s {
 
 static void
 pc_sys_dtor(
- pc_master* const,
- pc_region* const
+    pc_master* const,
+    pc_region* const
 );
 
 static void
 pc_init(
- pc_master* const,
- pc_fp_dtor* const
+    pc_master* const,
+    pc_fp_dtor* const
 );
 
 static void
 pc_node_init(
- pc_node* const
+    pc_node* const
 );
 
 static void
 pc_node_link(
- pc_node* const,
- pc_node* const
+    pc_node* const,
+    pc_node* const
 );
 
 static pc_region*
 pc_acquire(
- pc_master* const
+    pc_master* const
 );
 
 static void
 pc_release(
- pc_master* const,
- pc_region* const
+    pc_master* const,
+    pc_region* const
 );
 
 static void
 pc_defer(
- pc_region* const,
- pc_node* const
+    pc_region* const,
+    pc_node* const
 );
 
 static void
 pc_mutate(
- pc_master* const,
- pc_node* const
+    pc_master* const,
+    pc_node* const
 );
 
 void
 pc_init(
- pc_master* const _this,
- pc_fp_dtor* const fp_dtor
+    pc_master* const _this,
+    pc_fp_dtor* const fp_dtor
 ) {
-  pc_master src = { { 0 } };
+  pc_master src = {{0}};
   *_this = src;
   _this->head.region = &_this->region;
   _this->fp_dtor = fp_dtor;
@@ -213,21 +234,21 @@ pc_init(
 
 pc_region*
 pc_acquire(
- pc_master* const _this
+    pc_master* const _this
 ) {
   pc_sys_anchor cmp = _this->head, xchg;
   do {
     xchg.refcnt = cmp.refcnt + 2;
     xchg.region = cmp.region;
-  } while (! DWCASPTR(&_this->head, &cmp, &xchg));
+  } while (!DWCASPTR(&_this->head, &cmp, &xchg));
   return cmp.region;
 
 }
 
 void
 pc_release(
- pc_master* const _this,
- pc_region* const region
+    pc_master* const _this,
+    pc_region* const region
 ) {
   if (XADDWORD(&region->next.refcnt, -2) == 3) {
     pc_sys_dtor(_this, region);
@@ -237,17 +258,17 @@ pc_release(
 
 void
 pc_node_init(
- pc_node* const _this
+    pc_node* const _this
 ) {
-  pc_node src = { { 0 } };
+  pc_node src = {{0}};
   *_this = src;
 
 }
 
 void
 pc_node_link(
- pc_node* const _this,
- pc_node* const next
+    pc_node* const _this,
+    pc_node* const next
 ) {
   _this->defer = next;
 
@@ -255,8 +276,8 @@ pc_node_link(
 
 void
 pc_defer(
- pc_region* const _this,
- pc_node* const node
+    pc_region* const _this,
+    pc_node* const node
 ) {
   node->defer = XCHGPTR(&_this->defer, node);
 
@@ -264,14 +285,14 @@ pc_defer(
 
 void
 pc_mutate(
- pc_master* const _this,
- pc_node* const node
+    pc_master* const _this,
+    pc_node* const node
 ) {
-  pc_sys_anchor cmp = _this->head, xchg = { 0 };
+  pc_sys_anchor cmp = _this->head, xchg = {0};
   node->next.refcnt = 2;
   node->next.region = NULL;
   xchg.region = node;
-  while (! DWCASPTR(&_this->head, &cmp, &xchg));
+  while (!DWCASPTR(&_this->head, &cmp, &xchg));
   cmp.region->next.region = node;
   if (XADDWORD(&cmp.region->next.refcnt,
                cmp.refcnt + 1) == -cmp.refcnt) {
@@ -282,8 +303,8 @@ pc_mutate(
 
 void
 pc_sys_dtor(
- pc_master* const _this,
- pc_region* const region
+    pc_master* const _this,
+    pc_region* const region
 ) {
   int dtors = 0, reset = 0;
   pc_region* head = region;
@@ -323,7 +344,7 @@ pc_sys_dtor(
     pc_mutate(_this, &_this->region);
   }
 
-#if ! defined(NDEBUG)
+#if !defined(NDEBUG)
   {
     static atomicword g_pc_sys_epoch = 0;
     atomicword const epoch = XADDWORD(&g_pc_sys_epoch, 1);
@@ -338,14 +359,14 @@ pc_sys_dtor(
 
 /*===========================================================*/
 #   if defined(__cplusplus)
-      }
+}
 #   endif
 #   pragma warning(pop)
 #endif
 ____________________________________________________________________
 
 
- struct foo_node {
+struct foo_node {
   foo_node* next;
   pc_node pcn;
 
@@ -358,7 +379,7 @@ struct foo_list {
 };
 
 static foo_list g_list = {
-  NULL, PC_MASTER_STATICINIT()
+    NULL, PC_MASTER_STATICINIT()
 
 };
 
@@ -372,14 +393,14 @@ void foo_reader() {
   int i;
   foo_node* node;
   pc_region* pcr = pc_acquire(&g_list.pc);
-  for (i = 1 ;; ++i) {
+  for (i = 1;; ++i) {
     node = LOAD_DEPENDS(&g_list.head);
     while (node) {
       foo_node* const next = LOAD_MBDEPEND(&node->next);
       [...];
       node = next;
     }
-    if (! (i % 1000)) {
+    if (!(i % 1000)) {
       pc_release(&g_list.pc, pcr);
       pcr = pc_acquire(&g_list.pc);
     }
@@ -390,9 +411,9 @@ void foo_reader() {
 
 void foo_writer() {
   int i;
-  foo_node* node, *cmp;
+  foo_node* node, * cmp;
   pc_region* pcr = pc_acquire(&g_list.pc);
-  for (i = 1 ;; ++i) {
+  for (i = 1;; ++i) {
     if (i % 10) {
       node = malloc(sizeof(*node));
       if (node) {
@@ -401,44 +422,71 @@ void foo_writer() {
         cmp = g_list.head;
         do {
           node->next = cmp;
-        } while (! CASIBM_MBREL(&g_list.head, &cmp, node));
+        } while (!CASIBM_MBREL(&g_list.head, &cmp, node));
       }
     } else {
       node = g_list.head;
       do {
-        if (! node) { break; }
-      } while (! CASIBM_MBACQ(&g_list.head, &node, node->next));
+        if (!node) { break; }
+      } while (!CASIBM_MBACQ(&g_list.head, &node, node->next));
       if (node) {
-        if (! (i % 20)) {
+        if (!(i % 20)) {
           pc_mutate(&g_list.pc, &node->pcn);
         } else {
           pc_defer(pcr, &node->pcn);
         }
       }
     }
-    if (! (i % 500)) {
+    if (!(i % 500)) {
       pc_release(&g_list.pc, pcr);
       pcr = pc_acquire(&g_list.pc);
     }
   }
   pc_release(&g_list.pc, pcr);
-} 
+}
 
 
+1. Region 1
+is current
+2. Thread 1
+acquires region
+1
+3. Thread 2
 
+executes pc_mutate()
 
+4. Region 2
+is current
+5. Thread 3
+acquires region
+2
+6. Thread 3
+loads pointer
+to node
+1
+7. Thread 1
+removes node
+1
+from data
+structure
+8. Thread 1
 
-1. Region 1 is current
-2. Thread 1 acquires region 1
-3. Thread 2 executes pc_mutate()
-4. Region 2 is current
-5. Thread 3 acquires region 2
-6. Thread 3 loads pointer to node 1
-7. Thread 1 removes node 1 from data structure
-8. Thread 1 executes pc_defer() and defers node 1 to region 1
-9. Thread 1 releases region 1
-10. Dtor executed for region 1, node 1 is deleted
-11. Thread 3 accesses node 1
+executes pc_defer()and
+
+defers node
+1
+to region
+1
+9. Thread 1
+releases region
+1
+10.
+Dtor executed
+for region 1, node 1
+is deleted
+11. Thread 3
+accesses node
+1
 12. Bang! 
 
 

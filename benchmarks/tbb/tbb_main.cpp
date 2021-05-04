@@ -42,7 +42,7 @@ basic_tls<generic_scheduler*> governor::theTLS;
 unsigned governor::DefaultNumberOfThreads;
 rml::tbb_factory governor::theRMLServerFactory;
 bool governor::UsePrivateRML;
-const task_scheduler_init *governor::BlockingTSI;
+const task_scheduler_init* governor::BlockingTSI;
 #if TBB_USE_ASSERT
 bool governor::IsBlockingTerminationInProgress;
 #endif
@@ -65,19 +65,19 @@ __TBB_atomic_flag __TBB_InitOnce::InitializationLock;
 bool __TBB_InitOnce::InitializationDone;
 
 #if DO_ITT_NOTIFY
-    static bool ITT_Present;
-    static bool ITT_InitializationDone;
+static bool ITT_Present;
+static bool ITT_InitializationDone;
 #endif
 
-#if !(_WIN32||_WIN64) || __TBB_SOURCE_DIRECTLY_INCLUDED
-    static __TBB_InitOnce __TBB_InitOnceHiddenInstance;
+#if !(_WIN32 || _WIN64) || __TBB_SOURCE_DIRECTLY_INCLUDED
+static __TBB_InitOnce __TBB_InitOnceHiddenInstance;
 #endif
 
 //------------------------------------------------------------------------
 // generic_scheduler data
 
 //! Pointer to the scheduler factory function
-generic_scheduler* (*AllocateSchedulerPtr)( arena*, size_t index );
+generic_scheduler* (* AllocateSchedulerPtr)(arena*, size_t index);
 
 #if __TBB_OLD_PRIMES_RNG
 //! Table of primes used by fast random-number generator (FastRandom).
@@ -120,17 +120,17 @@ unsigned GetPrime ( unsigned seed ) {
 //------------------------------------------------------------------------
 
 void __TBB_InitOnce::add_ref() {
-    if( ++count==1 )
-        governor::acquire_resources();
+  if (++count == 1)
+    governor::acquire_resources();
 }
 
 void __TBB_InitOnce::remove_ref() {
-    int k = --count;
-    __TBB_ASSERT(k>=0,"removed __TBB_InitOnce ref that was not added?"); 
-    if( k==0 ) {
-        governor::release_resources();
-        ITT_FINI_ITTLIB();
-    }
+  int k = --count;
+  __TBB_ASSERT(k >= 0, "removed __TBB_InitOnce ref that was not added?");
+  if (k == 0) {
+    governor::release_resources();
+    ITT_FINI_ITTLIB();
+  }
 }
 
 //------------------------------------------------------------------------
@@ -141,7 +141,7 @@ void __TBB_InitOnce::remove_ref() {
 void initialize_cache_aligned_allocator();
 
 //! Defined in scheduler.cpp
-void Scheduler_OneTimeInitialization ( bool itt_present );
+void Scheduler_OneTimeInitialization(bool itt_present);
 
 #if DO_ITT_NOTIFY
 
@@ -159,7 +159,7 @@ struct resource_string {
 //
 #define TBB_STRING_RESOURCE( index_name, str ) { str, NULL },
 static resource_string strings_for_itt[] = {
-    #include "tbb/internal/_tbb_strings.h"
+#include "tbb/internal/_tbb_strings.h"
     { "num_resource_strings", NULL } 
 };
 #undef TBB_STRING_RESOURCE
@@ -216,32 +216,32 @@ void ITT_DoOneTimeInitialization() {
 
 //! Performs thread-safe lazy one-time general TBB initialization.
 void DoOneTimeInitializations() {
-    suppress_unused_warning(_pad);
-    __TBB_InitOnce::lock();
-    // No fence required for load of InitializationDone, because we are inside a critical section.
-    if( !__TBB_InitOnce::InitializationDone ) {
-        __TBB_InitOnce::add_ref();
-        if( GetBoolEnvironmentVariable("TBB_VERSION") )
-            PrintVersion();
-        bool itt_present = false;
+  suppress_unused_warning(_pad);
+  __TBB_InitOnce::lock();
+  // No fence required for load of InitializationDone, because we are inside a critical section.
+  if (!__TBB_InitOnce::InitializationDone) {
+    __TBB_InitOnce::add_ref();
+    if (GetBoolEnvironmentVariable("TBB_VERSION"))
+      PrintVersion();
+    bool itt_present = false;
 #if DO_ITT_NOTIFY
-        ITT_DoUnsafeOneTimeInitialization();
-        itt_present = ITT_Present;
+    ITT_DoUnsafeOneTimeInitialization();
+    itt_present = ITT_Present;
 #endif /* DO_ITT_NOTIFY */
-        initialize_cache_aligned_allocator();
-        governor::initialize_rml_factory();
-        Scheduler_OneTimeInitialization( itt_present );
-        // Force processor groups support detection
-        governor::default_num_threads();
-        // Dump version data
-        governor::print_version_info();
-        PrintExtraVersionInfo( "Tools support", itt_present ? "enabled" : "disabled" );
-        __TBB_InitOnce::InitializationDone = true;
-    }
-    __TBB_InitOnce::unlock();
+    initialize_cache_aligned_allocator();
+    governor::initialize_rml_factory();
+    Scheduler_OneTimeInitialization(itt_present);
+    // Force processor groups support detection
+    governor::default_num_threads();
+    // Dump version data
+    governor::print_version_info();
+    PrintExtraVersionInfo("Tools support", itt_present ? "enabled" : "disabled");
+    __TBB_InitOnce::InitializationDone = true;
+  }
+  __TBB_InitOnce::unlock();
 }
 
-#if (_WIN32||_WIN64) && !__TBB_SOURCE_DIRECTLY_INCLUDED
+#if (_WIN32 || _WIN64) && !__TBB_SOURCE_DIRECTLY_INCLUDED
 //! Windows "DllMain" that handles startup and shutdown of dynamic library.
 extern "C" bool WINAPI DllMain( HANDLE /*hinstDLL*/, DWORD reason, LPVOID /*lpvReserved*/ ) {
     switch( reason ) {
@@ -265,17 +265,17 @@ extern "C" bool WINAPI DllMain( HANDLE /*hinstDLL*/, DWORD reason, LPVOID /*lpvR
 }
 #endif /* (_WIN32||_WIN64) && !__TBB_SOURCE_DIRECTLY_INCLUDED */
 
-void itt_store_pointer_with_release_v3( void* dst, void* src ) {
-    ITT_NOTIFY(sync_releasing, dst);
-    __TBB_store_with_release(*static_cast<void**>(dst),src);
+void itt_store_pointer_with_release_v3(void* dst, void* src) {
+  ITT_NOTIFY(sync_releasing, dst);
+  __TBB_store_with_release(*static_cast<void**>(dst), src);
 }
 
-void* itt_load_pointer_with_acquire_v3( const void* src ) {
-    void* result = __TBB_load_with_acquire(*static_cast<void*const*>(src));
-    ITT_NOTIFY(sync_acquired, const_cast<void*>(src));
-    return result;
+void* itt_load_pointer_with_acquire_v3(const void* src) {
+  void* result = __TBB_load_with_acquire(*static_cast<void* const*>(src));
+  ITT_NOTIFY(sync_acquired, const_cast<void*>(src));
+  return result;
 }
-    
+
 #if DO_ITT_NOTIFY
 void call_itt_notify_v5(int t, void *ptr) {
     switch (t) {
@@ -286,7 +286,9 @@ void call_itt_notify_v5(int t, void *ptr) {
     }
 }
 #else
+
 void call_itt_notify_v5(int /*t*/, void* /*ptr*/) {}
+
 #endif
 
 #if __TBB_ITT_STRUCTURE_API
@@ -387,15 +389,15 @@ void itt_task_end_v7( itt_domain_enum domain ) { }
 
 #endif // __TBB_ITT_STRUCTURE_API
 
-void* itt_load_pointer_v3( const void* src ) {
-    //TODO: replace this with __TBB_load_relaxed
-    void* result = *static_cast<void*const*>(src);
-    return result;
+void* itt_load_pointer_v3(const void* src) {
+  //TODO: replace this with __TBB_load_relaxed
+  void* result = *static_cast<void* const*>(src);
+  return result;
 }
 
-void itt_set_sync_name_v3( void* obj, const tchar* name) {
-    ITT_SYNC_RENAME(obj, name);
-    suppress_unused_warning(obj && name);
+void itt_set_sync_name_v3(void* obj, const tchar* name) {
+  ITT_SYNC_RENAME(obj, name);
+  suppress_unused_warning(obj && name);
 }
 
 

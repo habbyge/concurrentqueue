@@ -13,37 +13,35 @@
 #include <functional>
 
 
-namespace dlib
-{
+namespace dlib {
 
-    template <
-        typename domain,
-        typename range,
-        typename mem_manager = default_memory_manager,
-        typename compare = std::less<domain>
-        >
-    class binary_search_tree
-    {
-        binary_search_tree() {}
+template<
+    typename domain,
+    typename range,
+    typename mem_manager = default_memory_manager,
+    typename compare = std::less <domain>
+>
+class binary_search_tree {
+  binary_search_tree() {}
 
-    public:
-        
-        //----------- kernels ---------------
+public:
 
-        // kernel_1a        
-        typedef     binary_search_tree_kernel_1<domain,range,mem_manager,compare>    
-                    kernel_1a;
-        typedef     binary_search_tree_kernel_c<kernel_1a>
-                    kernel_1a_c;
+  //----------- kernels ---------------
+
+  // kernel_1a
+  typedef binary_search_tree_kernel_1<domain, range, mem_manager, compare>
+      kernel_1a;
+  typedef binary_search_tree_kernel_c<kernel_1a>
+      kernel_1a_c;
 
 
-        // kernel_2a        
-        typedef     binary_search_tree_kernel_2<domain,range,mem_manager,compare>    
-                    kernel_2a;
-        typedef     binary_search_tree_kernel_c<kernel_2a>
-                    kernel_2a_c;
+  // kernel_2a
+  typedef binary_search_tree_kernel_2<domain, range, mem_manager, compare>
+      kernel_2a;
+  typedef binary_search_tree_kernel_c<kernel_2a>
+      kernel_2a_c;
 
-    };
+};
 }
 
 #endif // DLIB_BINARY_SEARCH_TREe_

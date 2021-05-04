@@ -30,7 +30,7 @@ namespace tbb {
 namespace internal {
 
 //condition_variable
-#if _WIN32||_WIN64
+#if _WIN32 || _WIN64
 using tbb::interface5::internal::condition_variable_using_event;
 
 static atomic<do_once_state> condvar_api_state;
@@ -148,7 +148,7 @@ void init_condvar_module()
 
 } // namespace internal
 
-#if _WIN32||_WIN64
+#if _WIN32 || _WIN64
 
 namespace interface5 {
 namespace internal {

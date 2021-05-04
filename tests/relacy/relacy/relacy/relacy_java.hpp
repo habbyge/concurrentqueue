@@ -24,6 +24,4 @@
 #include "java_var.hpp"
 
 
-
-
 #endif

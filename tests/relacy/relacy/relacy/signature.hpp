@@ -18,64 +18,59 @@
 #include "context_base.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
 template<unsigned magic>
-class signature
-{
+class signature {
 public:
-    signature()
-        : magic_(magic)
-    {
-    }
+  signature()
+      : magic_(magic) {
+  }
 
-    signature(signature const&)
-        : magic_(magic)
-    {
-    }
+  signature(signature const&)
+      : magic_(magic) {
+  }
 
-    ~signature()
-    {
-        check(RL_INFO);
-        magic_ = 0;
-    }
+  ~signature() {
+    check(RL_INFO);
+    magic_ = 0;
+  }
 
-    void check(debug_info_param info) const
+  void check(debug_info_param info) const {
+    if (
+        ((uintptr_t)
+      this <= (uintptr_t) - 1 - 4096) &&
+    ((uintptr_t)
+    this >= 4096) &&
+    ((uintptr_t)
+    this % sizeof(unsigned) == 0) && (magic == magic_))
     {
-        if (
-            ((uintptr_t)this <= (uintptr_t)-1 - 4096) && 
-            ((uintptr_t)this >= 4096) &&
-            ((uintptr_t)this % sizeof(unsigned) == 0) && (magic == magic_))
-        {
-            return;
-        }
-        else
-        {
-            fail(info);
-        }
+      return;
     }
+    else
+    {
+      fail(info);
+    }
+  }
 
 private:
-    unsigned magic_;
+  unsigned magic_;
 
-    struct fault_event
-    {
-        void const* addr_;
-        void output(std::ostream& s) const
-        {
-            s << "<" << std::hex << addr_ << std::dec << ">"
-                << " access to freed memory";
-        }
-    };
+  struct fault_event {
+    void const* addr_;
 
-    RL_NOINLINE void fail(debug_info_param info) const
-    {
-        context& c = ctx();
-        RL_HIST(fault_event) {this} RL_HIST_END();
-        rl::ctx().fail_test("access to freed memory", test_result_access_to_freed_memory, info);
+    void output(std::ostream& s) const {
+      s << "<" << std::hex << addr_ << std::dec << ">"
+        << " access to freed memory";
     }
+  };
+
+  RL_NOINLINE void fail(debug_info_param info) const {
+    context& c = ctx();
+    RL_HIST(fault_event) {this}RL_HIST_END();
+    rl::ctx().fail_test("access to freed memory", test_result_access_to_freed_memory, info);
+  }
 };
 
 

@@ -31,11 +31,11 @@
     BOOST_PP_CAT(BOOST_MPL_PP_TUPLE_11_ELEM_##i,BOOST_MPL_PP_SUB_##j) \
     /**/
 #else
-#   define BOOST_MPL_PP_SUB(i,j) \
+#   define BOOST_MPL_PP_SUB(i, j) \
     BOOST_MPL_PP_SUB_DELAY(i,j) \
     /**/
 
-#   define BOOST_MPL_PP_SUB_DELAY(i,j) \
+#   define BOOST_MPL_PP_SUB_DELAY(i, j) \
     BOOST_MPL_PP_TUPLE_11_ELEM_##i BOOST_MPL_PP_SUB_##j \
     /**/
 #endif
@@ -59,7 +59,7 @@
 #   define BOOST_MPL_PP_SUB(i,j) \
     BOOST_PP_SUB(i,j) \
     /**/
-    
+
 #endif
 
 #endif // BOOST_MPL_AUX_PREPROCESSOR_SUB_HPP_INCLUDED

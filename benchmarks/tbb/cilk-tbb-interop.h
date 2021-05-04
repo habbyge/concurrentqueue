@@ -46,14 +46,14 @@ extern "C" {
 typedef int __cilk_tbb_retcode;
 
 enum __cilk_tbb_stack_op {
-    CILK_TBB_STACK_ORPHAN, // disconnecting stack from a thread
-    CILK_TBB_STACK_ADOPT,  // reconnecting orphaned stack to a trhead
-    CILK_TBB_STACK_RELEASE // releasing stack
+  CILK_TBB_STACK_ORPHAN, // disconnecting stack from a thread
+  CILK_TBB_STACK_ADOPT,  // reconnecting orphaned stack to a trhead
+  CILK_TBB_STACK_RELEASE // releasing stack
 };
 
-typedef __cilk_tbb_retcode (*__cilk_tbb_pfn_stack_op)(enum __cilk_tbb_stack_op, void* data);
+typedef __cilk_tbb_retcode (* __cilk_tbb_pfn_stack_op)(enum __cilk_tbb_stack_op, void* data);
 
-typedef __cilk_tbb_retcode (*__cilk_tbb_pfn_unwatch_stacks)(void *data);
+typedef __cilk_tbb_retcode (* __cilk_tbb_pfn_unwatch_stacks)(void* data);
 
 /* Each thunk structure has two pointers: "routine" and "data".
    The caller of the thunk invokes *routine, passing "data" as the void* parameter. */
@@ -91,14 +91,14 @@ typedef __cilk_tbb_retcode (*__cilk_tbb_pfn_unwatch_stacks)(void *data);
                                           RELEASE
 */
 struct __cilk_tbb_stack_op_thunk {
-    __cilk_tbb_pfn_stack_op routine;
-    void* data;                 /* Set by TBB */
+  __cilk_tbb_pfn_stack_op routine;
+  void* data;                 /* Set by TBB */
 };
 
 /* Thunk invoked by TBB when it is no longer interested in watching the stack bound to the current thread. */
 struct __cilk_tbb_unwatch_thunk {
-    __cilk_tbb_pfn_unwatch_stacks routine;
-    void* data;      
+  __cilk_tbb_pfn_unwatch_stacks routine;
+  void* data;
 };
 
 /* Defined by cilkrts, called by TBB.

@@ -16,8 +16,7 @@
 #include "base.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 }
 

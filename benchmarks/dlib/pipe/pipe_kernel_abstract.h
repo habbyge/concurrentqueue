@@ -1,7 +1,7 @@
 // Copyright (C) 2006  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
-#undef DLIB_PIPE_KERNEl_ABSTRACT_ 
-#ifdef DLIB_PIPE_KERNEl_ABSTRACT_ 
+#undef DLIB_PIPE_KERNEl_ABSTRACT_
+#ifdef DLIB_PIPE_KERNEl_ABSTRACT_
 
 #include "../threads.h"
 

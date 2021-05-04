@@ -54,19 +54,18 @@
 
 // only setup the stack trace stuff if the asserts are enabled (which happens in debug mode
 // basically).  Also, this stuff doesn't work if you use NO_MAKEFILE
-#if defined(DLIB_ENABLE_STACK_TRACE) 
-#ifdef NO_MAKEFILE 
+#if defined(DLIB_ENABLE_STACK_TRACE)
+#ifdef NO_MAKEFILE
 #error "You can't use the dlib stack trace stuff and NO_MAKEFILE at the same time"
 #endif
 
-namespace dlib
-{
-    const std::string get_stack_trace();
+namespace dlib {
+const std::string get_stack_trace();
 }
 
 // redefine the DLIB_CASSERT macro to include the stack trace
 #undef DLIBM_CASSERT
-#define DLIBM_CASSERT(_exp,_message)                                              \
+#define DLIBM_CASSERT(_exp, _message)                                              \
     {if ( !(_exp) )                                                         \
     {                                                                       \
         std::ostringstream dlib_o_out;                                       \
@@ -78,25 +77,22 @@ namespace dlib
         dlib_o_out << "Stack Trace: \n" << dlib::get_stack_trace() << "\n";        \
         dlib_assert_breakpoint();                                           \
         throw dlib::fatal_error(dlib::EBROKEN_ASSERT,dlib_o_out.str());      \
-    }}                                                                      
+    }}
 
 
+namespace dlib {
 
-namespace dlib
-{
+class stack_tracer {
+public:
+  stack_tracer(
+      const char* funct_name,
+      const char* file_name,
+      const int line_number
+  );
 
-    class stack_tracer
-    {
-    public:
-        stack_tracer (
-            const char* funct_name,
-            const char* file_name,
-            const int line_number
-        );
+  ~stack_tracer();
 
-        ~stack_tracer();
-
-    };
+};
 }
 
 #define DLIB_STACK_TRACE_NAMED(x) dlib::stack_tracer dlib_stack_tracer_object(x,__FILE__,__LINE__)

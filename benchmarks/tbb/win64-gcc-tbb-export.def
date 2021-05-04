@@ -22,7 +22,8 @@
 {
 global:
 
-#define __TBB_SYMBOL( sym ) sym;
+#define __TBB_SYMBOL(sym) sym;
+
 #include "win64-gcc-tbb-export.lst"
 
 local:

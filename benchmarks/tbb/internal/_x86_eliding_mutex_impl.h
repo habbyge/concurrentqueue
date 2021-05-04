@@ -25,7 +25,7 @@
 #error Do not #include this internal file directly; use public TBB headers instead.
 #endif
 
-#if ( __TBB_x86_32 || __TBB_x86_64 )
+#if (__TBB_x86_32 || __TBB_x86_64)
 
 namespace tbb {
 namespace interface7 {

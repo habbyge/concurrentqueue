@@ -18,62 +18,52 @@
 #include "memory_order.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
-struct atomic_fence_event
-{
-    memory_order mo_;
-    bool is_thread_fence_;
+struct atomic_fence_event {
+  memory_order mo_;
+  bool is_thread_fence_;
 
-    void output(std::ostream& s) const
-    {
-        s << (is_thread_fence_ ? "" : "compiler ")
-            << format(mo_) << " fence";
-    }
+  void output(std::ostream& s) const {
+    s << (is_thread_fence_ ? "" : "compiler ")
+      << format(mo_) << " fence";
+  }
 };
 
 
-
-
 RL_INLINE
-void atomic_thread_fence(memory_order mo, debug_info_param info)
-{
-    context& c = ctx();
-    RL_VERIFY(false == c.invariant_executing);
+void atomic_thread_fence(memory_order mo, debug_info_param info) {
+  context& c = ctx();
+  RL_VERIFY(false == c.invariant_executing);
 
-    switch (mo)
-    {
+  switch (mo) {
     case mo_relaxed:
-        RL_VERIFY(false);
-        break;
+      RL_VERIFY(false);
+      break;
     case mo_consume:
     case mo_acquire:
-        c.atomic_thread_fence_acquire();
-        break;
+      c.atomic_thread_fence_acquire();
+      break;
     case mo_release:
-        c.atomic_thread_fence_release();
-        break;
+      c.atomic_thread_fence_release();
+      break;
     case mo_acq_rel:
-        c.atomic_thread_fence_acq_rel();
-        break;
+      c.atomic_thread_fence_acq_rel();
+      break;
     case mo_seq_cst:
-        c.atomic_thread_fence_seq_cst();
-        break;
-    }
+      c.atomic_thread_fence_seq_cst();
+      break;
+  }
 
-    RL_HIST(atomic_fence_event) {mo, true} RL_HIST_END();
+  RL_HIST(atomic_fence_event) {mo, true}RL_HIST_END();
 }
 
 
-
-
 RL_INLINE
-void atomic_signal_fence(memory_order mo, debug_info_param info)
-{
-    context& c = ctx();
-    RL_HIST(atomic_fence_event) {mo, false} RL_HIST_END();
+void atomic_signal_fence(memory_order mo, debug_info_param info) {
+  context& c = ctx();
+  RL_HIST(atomic_fence_event) {mo, false}RL_HIST_END();
 }
 
 

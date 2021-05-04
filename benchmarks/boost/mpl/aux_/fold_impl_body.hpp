@@ -46,16 +46,14 @@
     BOOST_PP_CAT(AUX778076_FOLD_IMPL_NAME_PREFIX,_chunk) \
     /**/
 
-namespace boost { namespace mpl { namespace aux {
+namespace boost {
+namespace mpl {
+namespace aux {
 
 /// forward declaration
 template<
-      BOOST_MPL_AUX_NTTP_DECL(int, N)
-    , typename First
-    , typename Last
-    , typename State
-    , typename ForwardOp
-    > 
+    BOOST_MPL_AUX_NTTP_DECL(int, N), typename First, typename Last, typename State, typename ForwardOp
+>
 struct AUX778076_FOLD_IMPL_NAME;
 
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
@@ -130,42 +128,31 @@ struct AUX778076_FOLD_IMPL_NAME<-1,Last,Last,State,ForwardOp>
 // Borland have some serious problems with the unrolled version, so
 // we always use a basic implementation
 template<
-      BOOST_MPL_AUX_NTTP_DECL(int, N)
-    , typename First
-    , typename Last
-    , typename State
-    , typename ForwardOp
-    > 
-struct AUX778076_FOLD_IMPL_NAME
-{
-    typedef AUX778076_FOLD_IMPL_NAME<
-          -1
-        , typename mpl::next<First>::type
-        , Last
-        , typename apply2<ForwardOp,State,AUX778076_FOLD_IMPL_OP(First)>::type
-        , ForwardOp
-        > res_;
+    BOOST_MPL_AUX_NTTP_DECL(int, N), typename First, typename Last, typename State, typename ForwardOp
+>
+struct AUX778076_FOLD_IMPL_NAME {
+typedef AUX778076_FOLD_IMPL_NAME
+<
+    -1, typename mpl::next<First>::type, Last, typename apply2<ForwardOp, State, AUX778076_FOLD_IMPL_OP(
+    First)>::type, ForwardOp
+> res_;
 
-    typedef typename res_::state state;
-    typedef typename res_::iterator iterator;
-    typedef state type;
+typedef typename res_::state state;
+typedef typename res_::iterator iterator;
+typedef state type;
 };
 
 template<
-      BOOST_MPL_AUX_NTTP_DECL(int, N)
-     , typename Last
-    , typename State
-    , typename ForwardOp
-    > 
-struct AUX778076_FOLD_IMPL_NAME<N,Last,Last,State,ForwardOp >
-{
-    typedef State state;
-    typedef Last iterator;
-    typedef state type;
+    BOOST_MPL_AUX_NTTP_DECL(int, N), typename Last, typename State, typename ForwardOp
+>
+struct AUX778076_FOLD_IMPL_NAME<N, Last, Last, State, ForwardOp> {
+typedef State state;
+typedef Last iterator;
+typedef state type;
 };
 
 #   endif // BOOST_WORKAROUND(__BORLANDC__, < 0x600)
- 
+
 #else // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
 template< BOOST_MPL_AUX_NTTP_DECL(int, N) >
@@ -293,7 +280,8 @@ struct AUX778076_FOLD_IMPL_NAME
 
 #endif // BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION
 
-}}}
+}
+}}
 
 #   undef AUX778076_FOLD_IMPL_NAME
 #   undef AUX778076_FOLD_CHUNK_NAME

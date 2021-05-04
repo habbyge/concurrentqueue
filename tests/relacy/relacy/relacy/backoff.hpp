@@ -17,33 +17,28 @@
 #include "context_base.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
-inline void yield(unsigned count, debug_info_param info)
-{
-    ctx().yield(count, info);
+inline void yield(unsigned count, debug_info_param info) {
+  ctx().yield(count, info);
 }
 
 
 template<unsigned factor_t, unsigned add_t>
-class backoff_t
-{
+class backoff_t {
 public:
-    backoff_t()
-        : count_(1)
-    {
-    }
+  backoff_t()
+      : count_(1) {
+  }
 
-    void yield(debug_info_param info)
-    {
-        rl::yield(count_, info);
-        count_ = count_ * factor_t + add_t;
-    }
+  void yield(debug_info_param info) {
+    rl::yield(count_, info);
+    count_ = count_ * factor_t + add_t;
+  }
 
 private:
-    unsigned count_;
+  unsigned count_;
 };
 
 

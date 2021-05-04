@@ -9,29 +9,27 @@
 #include "sliding_buffer/circular_buffer.h"
 
 
+namespace dlib {
 
-namespace dlib
-{
+template<
+    typename T
+>
+class sliding_buffer {
 
-    template <
-        typename T
-        >
-    class sliding_buffer
-    {
+  sliding_buffer() {}
 
-        sliding_buffer() {}
-    public:
-        
-        //----------- kernels ---------------
+public:
 
-        // kernel_1a        
-        typedef     sliding_buffer_kernel_1<T>    
-                    kernel_1a;
-        typedef     sliding_buffer_kernel_c<kernel_1a>
-                    kernel_1a_c;
-   
+  //----------- kernels ---------------
 
-    };
+  // kernel_1a
+  typedef sliding_buffer_kernel_1<T>
+      kernel_1a;
+  typedef sliding_buffer_kernel_c<kernel_1a>
+      kernel_1a_c;
+
+
+};
 }
 
 #endif // DLIB_SLIDING_BUFFEr_

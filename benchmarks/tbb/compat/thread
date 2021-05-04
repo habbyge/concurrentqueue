@@ -30,12 +30,12 @@ namespace std {
 typedef tbb::tbb_thread thread;
 
 namespace this_thread {
-    using tbb::this_tbb_thread::get_id;
-    using tbb::this_tbb_thread::yield;
+using tbb::this_tbb_thread::get_id;
+using tbb::this_tbb_thread::yield;
 
-    inline void sleep_for(const tbb::tick_count::interval_t& rel_time) {
-        tbb::internal::thread_sleep_v3( rel_time );
-    }
+inline void sleep_for(const tbb::tick_count::interval_t& rel_time) {
+  tbb::internal::thread_sleep_v3(rel_time);
+}
 
 }
 

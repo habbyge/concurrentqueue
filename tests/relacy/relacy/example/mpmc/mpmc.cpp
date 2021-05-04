@@ -215,297 +215,246 @@ struct test_mpmc : rl::test_suite<test_mpmc, 6>
 
 
 
-struct thread_node
-{
-    rl::var<thread_node*>       next;
-    rl::var<size_t>             count;
-    rl::var<size_t>             unconsumed;
-    rl::HANDLE                  sema;
-    rl::CRITICAL_SECTION        mtx;
+struct thread_node {
+  rl::var<thread_node*> next;
+  rl::var<size_t> count;
+  rl::var<size_t> unconsumed;
+  rl::HANDLE sema;
+  rl::CRITICAL_SECTION mtx;
 };
 
 
-void on_thread_exit(thread_node*& t_thread_node)
-{
-    thread_node* head = t_thread_node;
-    thread_node* my = 0;
-    if (head)
-    {
-        rl::EnterCriticalSection(&head->mtx, $);
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        if (head->next($))
-        {
-            my = head->next($);
-            head->next($) = (thread_node*)my->next($);
-        }
-        else
-        {
-            my = head;
-        }
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        rl::LeaveCriticalSection(&head->mtx, $);
-
-        while (my->unconsumed($))
-        {
-            rl::WaitForSingleObject(my->sema, rl::RL_INFINITE, $);
-            my->unconsumed($) -= 1;
-        }
-
-        rl::DeleteCriticalSection(&my->mtx, $);
-        rl::CloseHandle(my->sema, $);
-        RL_DELETE(my);
+void on_thread_exit(thread_node*& t_thread_node) {
+  thread_node* head = t_thread_node;
+  thread_node* my = 0;
+  if (head) {
+    rl::EnterCriticalSection(&head->mtx, $);
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    if (head->next($)) {
+      my = head->next($);
+      head->next($) = (thread_node*) my->next($);
+    } else {
+      my = head;
     }
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    rl::LeaveCriticalSection(&head->mtx, $);
+
+    while (my->unconsumed($)) {
+      rl::WaitForSingleObject(my->sema, rl::RL_INFINITE, $);
+      my->unconsumed($) -= 1;
+    }
+
+    rl::DeleteCriticalSection(&my->mtx, $);
+    rl::CloseHandle(my->sema, $);
+    RL_DELETE(my);
+  }
 
 }
 
-struct eventcount
-{
-    eventcount()
-    {
-        root($) = 0;
-        rl::InitializeCriticalSection(&mtx, $);
-    }
+struct eventcount {
+  eventcount() {
+    root($) = 0;
+    rl::InitializeCriticalSection(&mtx, $);
+  }
 
-    ~eventcount()
-    {
-        rl::DeleteCriticalSection(&mtx, $);
-    }
+  ~eventcount() {
+    rl::DeleteCriticalSection(&mtx, $);
+  }
 
-    void prepare_wait(thread_node*& t_thread_node)
-    {
-        thread_node* my = 0;
-        thread_node* head = t_thread_node;
-        if (head)
-        {
-            rl::EnterCriticalSection(&head->mtx, $);
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            //RL_ASSERT(head->status == stat_root);
-            RL_ASSERT (root($) != head);
-            if (head->next($))
-            {
-                my = head->next($);
-                head->next($) = (thread_node*)my->next($);
-                my->next($) = 0;
+  void prepare_wait(thread_node*& t_thread_node) {
+    thread_node* my = 0;
+    thread_node* head = t_thread_node;
+    if (head) {
+      rl::EnterCriticalSection(&head->mtx, $);
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      //RL_ASSERT(head->status == stat_root);
+      RL_ASSERT (root($) != head);
+      if (head->next($)) {
+        my = head->next($);
+        head->next($) = (thread_node*) my->next($);
+        my->next($) = 0;
 
-                //node_status st;
-                //if (stat_bucket != (st = (node_status)_InterlockedExchange(&my->status, stat_private)))
-                //    __asm int 3;
-                RL_ASSERT (0 == my->count($));
-            }
-            else
-            {
-                my = head;
+        //node_status st;
+        //if (stat_bucket != (st = (node_status)_InterlockedExchange(&my->status, stat_private)))
+        //    __asm int 3;
+        RL_ASSERT (0 == my->count($));
+      } else {
+        my = head;
 
-                //node_status st;
-                //if (stat_root != (st = (node_status)_InterlockedExchange(&my->status, stat_private)))
-                //    __asm int 3;
-                RL_ASSERT(0 == my->count($));
-            }
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            rl::LeaveCriticalSection(&head->mtx, $);
-        }
-        else
-        {
-            my = RL_NEW thread_node;
-            my->next($) = 0;
-            my->count($) = 0;
-            my->unconsumed($) = 0;
-            my->sema = rl::CreateSemaphore(0, 0, LONG_MAX, 0, $);
-            //my->status = stat_private;
-            rl::InitializeCriticalSection(&my->mtx, $);
-        }
-
-        while (my->unconsumed($))
-        {
-            rl::WaitForSingleObject(my->sema, rl::RL_INFINITE, $);
-            my->unconsumed($) -= 1;
-        }
-
-        RL_ASSERT(0 == my->next($));
+        //node_status st;
+        //if (stat_root != (st = (node_status)_InterlockedExchange(&my->status, stat_private)))
+        //    __asm int 3;
         RL_ASSERT(0 == my->count($));
-        //if (my->status != stat_private) __asm int 3;
+      }
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      rl::LeaveCriticalSection(&head->mtx, $);
+    } else {
+      my = RL_NEW
+      thread_node;
+      my->next($) = 0;
+      my->count($) = 0;
+      my->unconsumed($) = 0;
+      my->sema = rl::CreateSemaphore(0, 0, LONG_MAX, 0, $);
+      //my->status = stat_private;
+      rl::InitializeCriticalSection(&my->mtx, $);
+    }
 
-        rl::EnterCriticalSection(&mtx, $);
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        RL_ASSERT(root($) != my);
-        if (root($))
-        {
-            my->next($) = (thread_node*)((thread_node*)root($))->next($);
-            ((thread_node*)root($))->next($) = my;
+    while (my->unconsumed($)) {
+      rl::WaitForSingleObject(my->sema, rl::RL_INFINITE, $);
+      my->unconsumed($) -= 1;
+    }
 
-            //node_status st;
-            //if (stat_private != (st = (node_status)_InterlockedExchange(&my->status, stat_bucket)))
-            //    __asm int 3;
+    RL_ASSERT(0 == my->next($));
+    RL_ASSERT(0 == my->count($));
+    //if (my->status != stat_private) __asm int 3;
 
-            my = root($);
+    rl::EnterCriticalSection(&mtx, $);
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    RL_ASSERT(root($) != my);
+    if (root($)) {
+      my->next($) = (thread_node*) ((thread_node*) root($))->next($);
+      ((thread_node*) root($))->next($) = my;
+
+      //node_status st;
+      //if (stat_private != (st = (node_status)_InterlockedExchange(&my->status, stat_bucket)))
+      //    __asm int 3;
+
+      my = root($);
+    } else {
+      root($) = my;
+
+      //node_status st;
+      //if (stat_private != (st = (node_status)_InterlockedExchange(&my->status, stat_root)))
+      //    __asm int 3;
+    }
+    ((thread_node*) root($))->count($) += 1;
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    rl::LeaveCriticalSection(&mtx, $);
+    t_thread_node = my;
+  }
+
+  void wait(thread_node*& t_thread_node) {
+    thread_node* head = t_thread_node;
+    if (head == root($)) {
+      rl::WaitForSingleObject(head->sema, rl::RL_INFINITE, $);
+    } else {
+      rl::EnterCriticalSection(&head->mtx, $);
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      head->unconsumed($) += 1;
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      rl::LeaveCriticalSection(&head->mtx, $);
+    }
+  }
+
+  void retire_wait(thread_node*& t_thread_node) {
+    thread_node* head = t_thread_node;
+    if (head == root($)) {
+      rl::EnterCriticalSection(&mtx, $);
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      if (head == root($)) {
+        thread_node* my = 0;
+        head->count($) -= 1;
+        if (head->next($)) {
+          my = head->next($);
+          head->next($) = (thread_node*) my->next($);
+          my->next($) = 0;
+        } else {
+          my = head;
+          root($) = 0;
         }
-        else
-        {
-            root($) = my;
-
-            //node_status st;
-            //if (stat_private != (st = (node_status)_InterlockedExchange(&my->status, stat_root)))
-            //    __asm int 3;
-        }
-        ((thread_node*)root($))->count($) += 1;
         std::atomic_thread_fence($)(std::memory_order_seq_cst);
         rl::LeaveCriticalSection(&mtx, $);
+        //my->status = stat_root;
         t_thread_node = my;
+        return;
+      }
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      rl::LeaveCriticalSection(&mtx, $);
     }
+    rl::EnterCriticalSection(&head->mtx, $);
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    head->unconsumed($) += 1;
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    rl::LeaveCriticalSection(&head->mtx, $);
+  }
 
-    void wait(thread_node*& t_thread_node)
-    {
-        thread_node* head = t_thread_node;
-        if (head == root($))
-        {
-            rl::WaitForSingleObject(head->sema, rl::RL_INFINITE, $);
-        }
-        else
-        {
-            rl::EnterCriticalSection(&head->mtx, $);
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            head->unconsumed($) += 1;
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            rl::LeaveCriticalSection(&head->mtx, $);
-        }
+  void signal_all() {
+    //std::
+    //_mm_mfence();
+    thread_node* head = root($);
+    if (0 == head)
+      return;
+    rl::EnterCriticalSection(&mtx, $);
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    if (head != root($)) {
+      std::atomic_thread_fence($)(std::memory_order_seq_cst);
+      rl::LeaveCriticalSection(&mtx, $);
+      return;
     }
+    size_t count = head->count($);
+    head->count($) = 0;
+    root($) = 0;
+    std::atomic_thread_fence($)(std::memory_order_seq_cst);
+    rl::LeaveCriticalSection(&mtx, $);
+    rl::ReleaseSemaphore(head->sema, count, 0, $);
+  }
 
-    void retire_wait(thread_node*& t_thread_node)
-    {
-        thread_node* head = t_thread_node;
-        if (head == root($))
-        {
-            rl::EnterCriticalSection(&mtx, $);
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            if (head == root($))
-            {
-                thread_node* my = 0;
-                head->count($) -= 1;
-                if (head->next($))
-                {
-                    my = head->next($);
-                    head->next($) = (thread_node*)my->next($);
-                    my->next($) = 0;
-                }
-                else
-                {
-                    my = head;
-                    root($) = 0;
-                }
-                std::atomic_thread_fence($)(std::memory_order_seq_cst);
-                rl::LeaveCriticalSection(&mtx, $);
-                //my->status = stat_root;
-                t_thread_node = my;
-                return;
-            }
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            rl::LeaveCriticalSection(&mtx, $);
-        }
-        rl::EnterCriticalSection(&head->mtx, $);
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        head->unconsumed($) += 1;
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        rl::LeaveCriticalSection(&head->mtx, $);
-    }
+  std::atomic<thread_node*> root;
+  rl::CRITICAL_SECTION mtx;
 
-    void signal_all()
-    {
-        //std::
-        //_mm_mfence();
-        thread_node* head = root($);
-        if (0 == head)
-            return;
-        rl::EnterCriticalSection(&mtx, $);
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        if (head != root($))
-        {
-            std::atomic_thread_fence($)(std::memory_order_seq_cst);
-            rl::LeaveCriticalSection(&mtx, $);
-            return;
-        }
-        size_t count = head->count($);
-        head->count($) = 0;
-        root($) = 0;
-        std::atomic_thread_fence($)(std::memory_order_seq_cst);
-        rl::LeaveCriticalSection(&mtx, $);
-        rl::ReleaseSemaphore(head->sema, count, 0, $);
-    }
-
-    std::atomic<thread_node*>       root;
-    rl::CRITICAL_SECTION            mtx;
-
-}; 
-
-
-
-
-struct test_ec : rl::test_suite<test_ec, 8>
-{
-    std::atomic<int> x [2];
-    eventcount ec;
-
-    void before()
-    {
-        x[0]($) = 0;
-        x[1]($) = 0;
-    }
-
-    void thread(unsigned idx)
-    {
-        if (idx < 4)
-        {
-            for (int i = 0; i != 3; ++i)
-            {
-                x[idx % 2]($).fetch_add(1);
-                ec.signal_all();
-            }
-        }
-        else
-        {
-            thread_node* my = 0;
-            for (int i = 0; i != 3; ++i)
-            {
-                for (;;)
-                {
-                    int cmp = x[idx % 2]($);
-                    if (cmp > 0)
-                    {
-                        if (x[idx % 2]($).compare_exchange(cmp, cmp - 1))
-                            break;
-                    }
-                    else
-                    {
-                        for (;;)
-                        {
-                            ec.prepare_wait(my);
-                            cmp = x[idx % 2]($);
-                            if (cmp > 0)
-                            {
-                                ec.retire_wait(my);
-                                break;
-                            }
-                            ec.wait(my);
-                            cmp = x[idx % 2]($);
-                            if (cmp > 0)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            on_thread_exit(my);
-        }
-    }
 };
 
 
+struct test_ec : rl::test_suite<test_ec, 8> {
+  std::atomic<int> x[2];
+  eventcount ec;
 
-int main()
-{
-    rl::test_params p;
-    p.iteration_count = 20000000;
-    p.initial_state = "10000000";
-    rl::simulate<test_ec>(p);
+  void before() {
+    x[0]($) = 0;
+    x[1]($) = 0;
+  }
+
+  void thread(unsigned idx) {
+    if (idx < 4) {
+      for (int i = 0; i != 3; ++i) {
+        x[idx % 2]($).fetch_add(1);
+        ec.signal_all();
+      }
+    } else {
+      thread_node* my = 0;
+      for (int i = 0; i != 3; ++i) {
+        for (;;) {
+          int cmp = x[idx % 2]($);
+          if (cmp > 0) {
+            if (x[idx % 2]($).compare_exchange(cmp, cmp - 1))
+              break;
+          } else {
+            for (;;) {
+              ec.prepare_wait(my);
+              cmp = x[idx % 2]($);
+              if (cmp > 0) {
+                ec.retire_wait(my);
+                break;
+              }
+              ec.wait(my);
+              cmp = x[idx % 2]($);
+              if (cmp > 0) {
+                break;
+              }
+            }
+          }
+        }
+      }
+      on_thread_exit(my);
+    }
+  }
+};
+
+
+int main() {
+  rl::test_params p;
+  p.iteration_count = 20000000;
+  p.initial_state = "10000000";
+  rl::simulate<test_ec>(p);
 }
 

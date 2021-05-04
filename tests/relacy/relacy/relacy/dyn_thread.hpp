@@ -18,33 +18,28 @@
 #include "stdlib/semaphore.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
-class dyn_thread : nocopy<>
-{
+class dyn_thread : nocopy<> {
 public:
-    dyn_thread()
-    {
-        handle_ = 0;
-    }
+  dyn_thread() {
+    handle_ = 0;
+  }
 
-    void start(void*(*fn)(void*), void* arg)
-    {
-        RL_VERIFY(handle_ == 0);
-        handle_ = ctx().create_thread(fn, arg);
-    }
+  void start(void* (* fn)(void*), void* arg) {
+    RL_VERIFY(handle_ == 0);
+    handle_ = ctx().create_thread(fn, arg);
+  }
 
-    void join()
-    {
-        RL_VERIFY(handle_);
-        handle_->wait(false, false, $);
-        handle_ = 0;
-    }
+  void join() {
+    RL_VERIFY(handle_);
+    handle_->wait(false, false, $);
+    handle_ = 0;
+  }
 
 private:
-    win_waitable_object* handle_;
+  win_waitable_object* handle_;
 };
 
 

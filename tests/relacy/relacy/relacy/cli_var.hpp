@@ -17,140 +17,120 @@
 #include "atomic.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
-template<typename T> class nvar;
+template<typename T>
+class nvar;
 
 
 template<typename T>
-class nvar_proxy
-{
+class nvar_proxy {
 public:
-    typedef typename atomic_add_type<T>::type add_type;
-    template<typename Y> friend class nvar;
+  typedef typename atomic_add_type<T>::type add_type;
 
-    operator T () const
-    {
-        return load();
-    }
+  template<typename Y> friend
+  class nvar;
 
-    T operator = (T value)
-    {
-        store(value);
-        return value;
-    }
+  operator T() const {
+    return load();
+  }
 
-    T operator = (nvar_proxy const& r)
-    {
-        T const value = r.load();
-        store(value);
-        return *this;
-    }
+  T operator=(T value) {
+    store(value);
+    return value;
+  }
 
-    T operator ++ (int)
-    {
-        T tmp = load();
-        store(tmp + 1);
-        return tmp;
-    }
+  T operator=(nvar_proxy const& r) {
+    T const value = r.load();
+    store(value);
+    return *this;
+  }
 
-    T operator -- (int)
-    {
-        T tmp = load();
-        store(tmp - 1);
-        return tmp;
-    }
+  T operator++(int) {
+    T tmp = load();
+    store(tmp + 1);
+    return tmp;
+  }
 
-    T operator ++ ()
-    {
-        T tmp = load();
-        store(tmp + 1);
-        return tmp + 1;
-    }
+  T operator--(int) {
+    T tmp = load();
+    store(tmp - 1);
+    return tmp;
+  }
 
-    T operator -- ()
-    {
-        T tmp = load();
-        store(tmp - 1);
-        return tmp - 1;
-    }
+  T operator++() {
+    T tmp = load();
+    store(tmp + 1);
+    return tmp + 1;
+  }
 
-    T operator += (add_type value)
-    {
-        T tmp = load();
-        store(tmp + value);
-        return tmp + value;
-    }
+  T operator--() {
+    T tmp = load();
+    store(tmp - 1);
+    return tmp - 1;
+  }
 
-    T operator -= (add_type value)
-    {
-        T tmp = load();
-        store(tmp - value);
-        return tmp - value;
-    }
+  T operator+=(add_type value) {
+    T tmp = load();
+    store(tmp + value);
+    return tmp + value;
+  }
+
+  T operator-=(add_type value) {
+    T tmp = load();
+    store(tmp - value);
+    return tmp - value;
+  }
 
 private:
-    nvar<T>& var_;
-    debug_info info_;
+  nvar<T>& var_;
+  debug_info info_;
 
-    nvar_proxy(nvar<T>& var, debug_info_param info)
-        : var_(var)
-        , info_(info)
-    {
-    }
+  nvar_proxy(nvar<T>& var, debug_info_param info)
+      : var_(var), info_(info) {
+  }
 
-    T load() const
-    {
-        return var_.load(mo_relaxed, info_);
-    }
+  T load() const {
+    return var_.load(mo_relaxed, info_);
+  }
 
-    void store(T value)
-    {
-        var_.store(value, mo_relaxed, info_);
-    }
+  void store(T value) {
+    var_.store(value, mo_relaxed, info_);
+  }
 };
-
-
 
 
 template<typename T>
-class nvar : public generic_atomic<T, true>
-{
+class nvar : public generic_atomic<T, true> {
 public:
-    typedef nvar_proxy<T> proxy_t;
-    friend class nvar_proxy<T>;
+  typedef nvar_proxy<T> proxy_t;
 
-    nvar()
-    {
-    }
+  friend class nvar_proxy<T>;
 
-    explicit nvar(T value)
-    {
-        this->store(value, mo_relaxed, $);
-    }
+  nvar() {
+  }
 
-    nvar(nvar const& r)
-    {
-        T const value = r.load(mo_relaxed, $);
-        this->store(value, mo_relaxed, $);
-    }
+  explicit nvar(T value) {
+    this->store(value, mo_relaxed, $);
+  }
 
-    nvar(proxy_t const& r)
-    {
-        T const value = r.load();
-        this->store(value, mo_relaxed, r.info_);
-    }
+  nvar(nvar const& r) {
+    T const value = r.load(mo_relaxed, $);
+    this->store(value, mo_relaxed, $);
+  }
 
-    proxy_t operator () (debug_info_param info)
-    {
-        return proxy_t(*this, info);
-    }
+  nvar(proxy_t const& r) {
+    T const value = r.load();
+    this->store(value, mo_relaxed, r.info_);
+  }
+
+  proxy_t operator()(debug_info_param info) {
+    return proxy_t(*this, info);
+  }
 
 private:
-    nvar& operator = (nvar const&);
+  nvar& operator=(nvar const&);
 };
-
 
 
 }

@@ -34,11 +34,11 @@
 #include <sched.h>
 
 extern "C" {
-int32_t __TBB_machine_cas_32 (volatile void* ptr, int32_t value, int32_t comparand);
-int64_t __TBB_machine_cas_64 (volatile void* ptr, int64_t value, int64_t comparand);
-void __TBB_machine_flush ();
-void __TBB_machine_lwsync ();
-void __TBB_machine_isync ();
+int32_t __TBB_machine_cas_32(volatile void* ptr, int32_t value, int32_t comparand);
+int64_t __TBB_machine_cas_64(volatile void* ptr, int64_t value, int64_t comparand);
+void __TBB_machine_flush();
+void __TBB_machine_lwsync();
+void __TBB_machine_isync();
 }
 
 // Mapping of old entry point names retained for the sake of backward binary compatibility
@@ -55,16 +55,16 @@ void __TBB_machine_isync ();
 #define __TBB_USE_GENERIC_SEQUENTIAL_CONSISTENCY_LOAD_STORE 1
 
 #if __GNUC__
-    #define __TBB_control_consistency_helper() __asm__ __volatile__( "isync": : :"memory")
-    #define __TBB_acquire_consistency_helper() __asm__ __volatile__("lwsync": : :"memory")
-    #define __TBB_release_consistency_helper() __asm__ __volatile__("lwsync": : :"memory")
-    #define __TBB_full_memory_fence()          __asm__ __volatile__(  "sync": : :"memory")
+#define __TBB_control_consistency_helper() __asm__ __volatile__( "isync": : :"memory")
+#define __TBB_acquire_consistency_helper() __asm__ __volatile__("lwsync": : :"memory")
+#define __TBB_release_consistency_helper() __asm__ __volatile__("lwsync": : :"memory")
+#define __TBB_full_memory_fence()          __asm__ __volatile__(  "sync": : :"memory")
 #else
-    // IBM C++ Compiler does not support inline assembly
-    // TODO: Since XL 9.0 or earlier GCC syntax is supported. Replace with more
-    //       lightweight implementation (like in mac_ppc.h)
-    #define __TBB_control_consistency_helper() __TBB_machine_isync ()
-    #define __TBB_acquire_consistency_helper() __TBB_machine_lwsync ()
-    #define __TBB_release_consistency_helper() __TBB_machine_lwsync ()
-    #define __TBB_full_memory_fence()          __TBB_machine_flush ()
+// IBM C++ Compiler does not support inline assembly
+// TODO: Since XL 9.0 or earlier GCC syntax is supported. Replace with more
+//       lightweight implementation (like in mac_ppc.h)
+#define __TBB_control_consistency_helper() __TBB_machine_isync ()
+#define __TBB_acquire_consistency_helper() __TBB_machine_lwsync ()
+#define __TBB_release_consistency_helper() __TBB_machine_lwsync ()
+#define __TBB_full_memory_fence()          __TBB_machine_flush ()
 #endif

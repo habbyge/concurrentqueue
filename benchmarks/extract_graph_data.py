@@ -6,8 +6,8 @@
 # The x-axis of the graph is meant to be the number of threads (first column), with
 # the y-axis representing thousands of operations/second/thread (one column per queue).
 
-import sys
 import re
+import sys
 
 
 def extract(bench, log, data, hasBulk = True):

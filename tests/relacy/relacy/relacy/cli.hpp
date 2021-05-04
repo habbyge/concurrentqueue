@@ -18,33 +18,27 @@
 #include "atomic_fence.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
-struct Thread
-{
-    static void MemoryBarrier(debug_info_param info)
-    {
-        atomic_thread_fence(mo_seq_cst, info);
-    }
+struct Thread {
+  static void MemoryBarrier(debug_info_param info) {
+    atomic_thread_fence(mo_seq_cst, info);
+  }
 
-    template<typename T>
-    static T VolatileRead(generic_atomic<T, true> const& v, debug_info_param info)
-    {
-        return v.load(mo_acquire, info);
-    }
+  template<typename T>
+  static T VolatileRead(generic_atomic<T, true> const& v, debug_info_param info) {
+    return v.load(mo_acquire, info);
+  }
 
-    template<typename T>
-    static void VolatileWrite(generic_atomic<T, true>& v, T x, debug_info_param info)
-    {
-        v.store(x, mo_release, info);
-    }
+  template<typename T>
+  static void VolatileWrite(generic_atomic<T, true>& v, T x, debug_info_param info) {
+    v.store(x, mo_release, info);
+  }
 
-    static void SpinWait(int iterations, debug_info_param info)
-    {
-        ctx().yield(iterations, info);
-    }
+  static void SpinWait(int iterations, debug_info_param info) {
+    ctx().yield(iterations, info);
+  }
 };
 
 }

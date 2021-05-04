@@ -16,8 +16,7 @@
 #include "pch.hpp"
 #include "platform.hpp"
 
-namespace rl
-{
+namespace rl {
 size_t const subsequent_timed_wait_limit = 4;
 }
 
@@ -55,57 +54,58 @@ size_t const subsequent_timed_wait_limit = 4;
 #   define RL_IMPROVED_SEQ_CST_RMW
 #endif
 
-namespace rl
-{
+namespace rl {
 
 #define RL_NOCOPY(CLASS) \
     private: \
     CLASS(CLASS const&); \
     CLASS& operator = (CLASS const&);
+
 /**/
 
 
 template<typename T = void>
-class nocopy
-{
-    nocopy(nocopy const&);
-    nocopy& operator = (nocopy const&);
+class nocopy {
+  nocopy(nocopy const&);
+
+  nocopy& operator=(nocopy const&);
 
 protected:
-    nocopy() {}
+  nocopy() {}
 };
 
 
 template<size_t sz, size_t base = 4>
-struct align_pad
-{
-    template<bool perfect, bool fit, int fake> struct helper
-    {
-        struct type { char pad [base - sz]; };
+struct align_pad {
+  template<bool perfect, bool fit, int fake>
+  struct helper {
+    struct type {
+      char pad[base - sz];
     };
+  };
 
-    template<int fake> struct helper<true, true, fake>
-    {
-        struct type {};
+  template<int fake>
+  struct helper<true, true, fake> {
+    struct type {
     };
+  };
 
-    template<bool perfect, int fake> struct helper<perfect, false, fake>
-    {
-        typedef typename align_pad<sz, base * 2>::type type;
-    };
+  template<bool perfect, int fake>
+  struct helper<perfect, false, fake> {
+    typedef typename align_pad<sz, base * 2>::type type;
+  };
 
-    typedef typename helper<sz == base, sz <= base, 0>::type type;
+  typedef typename helper<sz == base, sz <= base, 0>::type type;
 };
 
 
 template<typename T>
-struct aligned : T, align_pad<sizeof(T)>::type
-{};
+struct aligned : T, align_pad<sizeof(T)>::type {
+};
 
 template<typename T>
-T val(T x)
-{
-    return x;
+T val(T x) {
+  return x;
 }
 
 }

@@ -18,121 +18,105 @@
 #include "random.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
 template<thread_id_t thread_count>
-class random_scheduler : public scheduler<random_scheduler<thread_count>, scheduler_thread_info, thread_count>
-{
+class random_scheduler : public scheduler<random_scheduler<thread_count>, scheduler_thread_info, thread_count> {
 public:
-    typedef scheduler<random_scheduler<thread_count>, scheduler_thread_info, thread_count> base_t;
-    typedef typename base_t::thread_info_t thread_info_t;
-    typedef typename base_t::shared_context_t shared_context_t;
+  typedef scheduler<random_scheduler<thread_count>, scheduler_thread_info, thread_count> base_t;
+  typedef typename base_t::thread_info_t thread_info_t;
+  typedef typename base_t::shared_context_t shared_context_t;
 
-    struct task_t
-    {
-    };
+  struct task_t {
+  };
 
-    random_scheduler(test_params& params, shared_context_t& ctx, thread_id_t dynamic_thread_count)
-        : base_t(params, ctx, dynamic_thread_count)
-    {
-    }
+  random_scheduler(test_params& params, shared_context_t& ctx, thread_id_t dynamic_thread_count)
+      : base_t(params, ctx, dynamic_thread_count) {
+  }
 
-    thread_id_t iteration_begin_impl()
-    {
-        rand_.seed(this->iter_);
-        unpark_reason reason;
-        return schedule_impl(reason, false);
-    }
+  thread_id_t iteration_begin_impl() {
+    rand_.seed(this->iter_);
+    unpark_reason reason;
+    return schedule_impl(reason, false);
+  }
 
-    bool iteration_end_impl()
-    {
-        return this->iter_ == this->params_.iteration_count;
-    }
+  bool iteration_end_impl() {
+    return this->iter_ == this->params_.iteration_count;
+  }
 
-    thread_id_t schedule_impl(unpark_reason& reason, unsigned /*yield*/)
-    {
-        thread_id_t const running_thread_count = this->running_threads_count;
+  thread_id_t schedule_impl(unpark_reason& reason, unsigned /*yield*/) {
+    thread_id_t const running_thread_count = this->running_threads_count;
 
-        thread_id_t timed_thread_count = this->timed_thread_count_;
-        if (timed_thread_count)
-        {
-            thread_id_t cnt = running_thread_count ? timed_thread_count * 4 : timed_thread_count;
-            thread_id_t idx = rand_.rand() % cnt;
-            if (idx < timed_thread_count)
-            {
-                thread_info_t* thr = this->timed_threads_[idx];
-                thread_id_t th = thr->index_;
-                RL_VERIFY(1 == thr->block_count_);
-                this->unpark_thread(th);
-                RL_VERIFY(thr->state_ == thread_state_running);
-                reason = unpark_reason_timeout;
-                return th;
-            }
-        }
-
-        thread_id_t spurious_thread_count = this->spurious_thread_count_;
-        if (spurious_thread_count && running_thread_count)
-        {
-            thread_id_t cnt = spurious_thread_count * 8;
-            thread_id_t idx = rand_.rand() % cnt;
-            if (idx < spurious_thread_count)
-            {
-                thread_info_t* thr = this->spurious_threads_[idx];
-                thread_id_t th = thr->index_;
-                RL_VERIFY(1 == thr->block_count_);
-                this->unpark_thread(th);
-                RL_VERIFY(thr->state_ == thread_state_running);
-                reason = unpark_reason_spurious;
-                return th;
-            }
-        }
-
-        RL_VERIFY(running_thread_count);
-        unsigned index = rand_.rand() % running_thread_count;
-        thread_id_t th = this->running_threads[index];
-        reason = unpark_reason_normal;
+    thread_id_t timed_thread_count = this->timed_thread_count_;
+    if (timed_thread_count) {
+      thread_id_t cnt = running_thread_count ? timed_thread_count * 4 : timed_thread_count;
+      thread_id_t idx = rand_.rand() % cnt;
+      if (idx < timed_thread_count) {
+        thread_info_t* thr = this->timed_threads_[idx];
+        thread_id_t th = thr->index_;
+        RL_VERIFY(1 == thr->block_count_);
+        this->unpark_thread(th);
+        RL_VERIFY(thr->state_ == thread_state_running);
+        reason = unpark_reason_timeout;
         return th;
+      }
     }
 
-    unsigned rand_impl(unsigned limit, sched_type t)
-    {
-        (void)t;
-        unsigned r = rand_.rand() % limit;
-        ///!!!
+    thread_id_t spurious_thread_count = this->spurious_thread_count_;
+    if (spurious_thread_count && running_thread_count) {
+      thread_id_t cnt = spurious_thread_count * 8;
+      thread_id_t idx = rand_.rand() % cnt;
+      if (idx < spurious_thread_count) {
+        thread_info_t* thr = this->spurious_threads_[idx];
+        thread_id_t th = thr->index_;
+        RL_VERIFY(1 == thr->block_count_);
+        this->unpark_thread(th);
+        RL_VERIFY(thr->state_ == thread_state_running);
+        reason = unpark_reason_spurious;
+        return th;
+      }
+    }
+
+    RL_VERIFY(running_thread_count);
+    unsigned index = rand_.rand() % running_thread_count;
+    thread_id_t th = this->running_threads[index];
+    reason = unpark_reason_normal;
+    return th;
+  }
+
+  unsigned rand_impl(unsigned limit, sched_type t) {
+    (void) t;
+    unsigned r = rand_.rand() % limit;
+    ///!!!
 #ifdef RL_MY_TEST
-        if (this->iter_ == 8761115)
-        {
-            char buf [1024];
-            sprintf(buf, "rand(%u, %u) = %u\n", t, limit, r);
-            OutputDebugStringA(buf);
-        }
+    if (this->iter_ == 8761115)
+    {
+        char buf [1024];
+        sprintf(buf, "rand(%u, %u) = %u\n", t, limit, r);
+        OutputDebugStringA(buf);
+    }
 #endif
-        return r;
-    }
+    return r;
+  }
 
-    iteration_t iteration_count_impl()
-    {
-        return this->params_.iteration_count;
-    }
+  iteration_t iteration_count_impl() {
+    return this->params_.iteration_count;
+  }
 
-    void get_state_impl(std::ostream& /*ss*/)
-    {
-    }
+  void get_state_impl(std::ostream& /*ss*/) {
+  }
 
-    void set_state_impl(std::istream& /*ss*/)
-    {
-    }
+  void set_state_impl(std::istream& /*ss*/) {
+  }
 
-    void on_thread_block(thread_id_t /*th*/, bool /*yield*/)
-    {
-    }
+  void on_thread_block(thread_id_t /*th*/, bool /*yield*/) {
+  }
 
 private:
-    random_generator rand_;
+  random_generator rand_;
 
-    RL_NOCOPY(random_scheduler);
+RL_NOCOPY(random_scheduler);
 };
 
 

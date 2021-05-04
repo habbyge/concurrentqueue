@@ -62,9 +62,9 @@
 #endif /* ITT_PLATFORM_MAC */
 
 #ifndef ITT_PLATFORM
-#  if ITT_OS==ITT_OS_WIN
+#  if ITT_OS == ITT_OS_WIN
 #    define ITT_PLATFORM ITT_PLATFORM_WIN
-#  elif ITT_OS==ITT_OS_MAC
+#  elif ITT_OS == ITT_OS_MAC
 #    define ITT_PLATFORM ITT_PLATFORM_MAC
 #  else
 #    define ITT_PLATFORM ITT_PLATFORM_POSIX
@@ -76,17 +76,20 @@
 #endif
 
 #include <stddef.h>
-#if ITT_PLATFORM==ITT_PLATFORM_WIN
+
+#if ITT_PLATFORM == ITT_PLATFORM_WIN
 #include <tchar.h>
 #else  /* ITT_PLATFORM==ITT_PLATFORM_WIN */
+
 #include <stdint.h>
+
 #if defined(UNICODE) || defined(_UNICODE)
 #include <wchar.h>
 #endif /* UNICODE || _UNICODE */
 #endif /* ITT_PLATFORM==ITT_PLATFORM_WIN */
 
 #ifndef CDECL
-#  if ITT_PLATFORM==ITT_PLATFORM_WIN
+#  if ITT_PLATFORM == ITT_PLATFORM_WIN
 #    define CDECL __cdecl
 #  else /* ITT_PLATFORM==ITT_PLATFORM_WIN */
 #    if defined _M_IX86 || defined __i386__ 
@@ -98,7 +101,7 @@
 #endif /* CDECL */
 
 #ifndef STDCALL
-#  if ITT_PLATFORM==ITT_PLATFORM_WIN
+#  if ITT_PLATFORM == ITT_PLATFORM_WIN
 #    define STDCALL __stdcall
 #  else /* ITT_PLATFORM==ITT_PLATFORM_WIN */
 #    if defined _M_IX86 || defined __i386__
@@ -116,7 +119,7 @@
 #define ITTAPI_CALL    CDECL
 #define LIBITTAPI_CALL CDECL
 
-#if ITT_PLATFORM==ITT_PLATFORM_WIN
+#if ITT_PLATFORM == ITT_PLATFORM_WIN
 /* use __forceinline (VC++ specific) */
 #define ITT_INLINE           __forceinline
 #define ITT_INLINE_ATTRIBUTE /* nothing */
@@ -137,8 +140,8 @@
 
 /** @cond exclude_from_documentation */
 /* Helper macro for joining tokens */
-#define ITT_JOIN_AUX(p,n) p##n
-#define ITT_JOIN(p,n)     ITT_JOIN_AUX(p,n)
+#define ITT_JOIN_AUX(p, n) p##n
+#define ITT_JOIN(p, n)     ITT_JOIN_AUX(p,n)
 
 #ifdef ITT_MAJOR
 #undef ITT_MAJOR
@@ -169,20 +172,20 @@
 #define ITTNOTIFY_VOID(n) (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)
 #define ITTNOTIFY_DATA(n) (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)
 
-#define ITTNOTIFY_VOID_D0(n,d)       (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d)
-#define ITTNOTIFY_VOID_D1(n,d,x)     (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x)
-#define ITTNOTIFY_VOID_D2(n,d,x,y)   (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y)
-#define ITTNOTIFY_VOID_D3(n,d,x,y,z) (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z)
-#define ITTNOTIFY_VOID_D4(n,d,x,y,z,a)     (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a)
-#define ITTNOTIFY_VOID_D5(n,d,x,y,z,a,b)   (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b)
-#define ITTNOTIFY_VOID_D6(n,d,x,y,z,a,b,c) (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b,c)
-#define ITTNOTIFY_DATA_D0(n,d)       (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d)
-#define ITTNOTIFY_DATA_D1(n,d,x)     (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x)
-#define ITTNOTIFY_DATA_D2(n,d,x,y)   (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y)
-#define ITTNOTIFY_DATA_D3(n,d,x,y,z) (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z)
-#define ITTNOTIFY_DATA_D4(n,d,x,y,z,a)     (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a)
-#define ITTNOTIFY_DATA_D5(n,d,x,y,z,a,b)   (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b)
-#define ITTNOTIFY_DATA_D6(n,d,x,y,z,a,b,c) (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b,c)
+#define ITTNOTIFY_VOID_D0(n, d)       (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d)
+#define ITTNOTIFY_VOID_D1(n, d, x)     (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x)
+#define ITTNOTIFY_VOID_D2(n, d, x, y)   (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y)
+#define ITTNOTIFY_VOID_D3(n, d, x, y, z) (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z)
+#define ITTNOTIFY_VOID_D4(n, d, x, y, z, a)     (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a)
+#define ITTNOTIFY_VOID_D5(n, d, x, y, z, a, b)   (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b)
+#define ITTNOTIFY_VOID_D6(n, d, x, y, z, a, b, c) (!(d)->flags) ? (void)0 : (!ITTNOTIFY_NAME(n)) ? (void)0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b,c)
+#define ITTNOTIFY_DATA_D0(n, d)       (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d)
+#define ITTNOTIFY_DATA_D1(n, d, x)     (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x)
+#define ITTNOTIFY_DATA_D2(n, d, x, y)   (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y)
+#define ITTNOTIFY_DATA_D3(n, d, x, y, z) (!(d)->flags) ?       0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z)
+#define ITTNOTIFY_DATA_D4(n, d, x, y, z, a)     (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a)
+#define ITTNOTIFY_DATA_D5(n, d, x, y, z, a, b)   (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b)
+#define ITTNOTIFY_DATA_D6(n, d, x, y, z, a, b, c) (!(d)->flags) ? 0 : (!ITTNOTIFY_NAME(n)) ?       0 : ITTNOTIFY_NAME(n)(d,x,y,z,a,b,c)
 
 #ifdef ITT_STUB
 #undef ITT_STUB
@@ -190,7 +193,7 @@
 #ifdef ITT_STUBV
 #undef ITT_STUBV
 #endif
-#define ITT_STUBV(api,type,name,args)                             \
+#define ITT_STUBV(api, type, name, args)                             \
     typedef type (api* ITT_JOIN(ITTNOTIFY_NAME(name),_t)) args;   \
     extern ITT_JOIN(ITTNOTIFY_NAME(name),_t) ITTNOTIFY_NAME(name);
 #define ITT_STUB ITT_STUBV
@@ -201,6 +204,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 #define INTEL_ITTNOTIFY_API_PRIVATE
+
 #include "../ittnotify.h"
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 // Copyright (C) 2008  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
 #undef DLIB_THREAD_POOl_ABSTRACT_Hh_
-#ifdef DLIB_THREAD_POOl_ABSTRACT_Hh_ 
+#ifdef DLIB_THREAD_POOl_ABSTRACT_Hh_
 
 #include "threads_kernel_abstract.h"
 #include "../uintn.h"

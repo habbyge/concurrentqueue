@@ -1,7 +1,7 @@
 // Copyright (C) 2006  Davis E. King (davis@dlib.net)
 // License: Boost Software License   See LICENSE.txt for the full license.
-#ifndef DLIB_WINDOWS_MAGIc_ 
-#define DLIB_WINDOWS_MAGIc_ 
+#ifndef DLIB_WINDOWS_MAGIc_
+#define DLIB_WINDOWS_MAGIc_
 
 #include "platform.h"
 

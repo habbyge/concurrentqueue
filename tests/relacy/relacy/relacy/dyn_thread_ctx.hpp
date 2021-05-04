@@ -20,105 +20,87 @@
 #include "stdlib/semaphore.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
 template<thread_id_t thread_count>
-class thread_sync_object : public win_waitable_object
-{
+class thread_sync_object : public win_waitable_object {
 public:
-    thread_sync_object()
-    {
-    }
+  thread_sync_object() {
+  }
 
-    void iteration_begin()
-    {
-        finished_ = false;
-        sync_.iteration_begin();
-        RL_VERIFY(!ws_);
-    }
+  void iteration_begin() {
+    finished_ = false;
+    sync_.iteration_begin();
+    RL_VERIFY(!ws_);
+  }
 
-    void on_create()
-    {
-        sync_.release(ctx().threadx_);
-    }
+  void on_create() {
+    sync_.release(ctx().threadx_);
+  }
 
-    void on_start()
-    {
-        RL_VERIFY(finished_ == false);
-        context& c = ctx();
-        sync_.acquire(c.threadx_);
-    }
-    
-    void on_finish()
-    {
-        RL_VERIFY(finished_ == false);
-        context& c = ctx();
-        finished_ = true;
-        sync_.release(c.threadx_);
-        ws_.unpark_all(c, $);
-    }
+  void on_start() {
+    RL_VERIFY(finished_ == false);
+    context& c = ctx();
+    sync_.acquire(c.threadx_);
+  }
+
+  void on_finish() {
+    RL_VERIFY(finished_ == false);
+    context& c = ctx();
+    finished_ = true;
+    sync_.release(c.threadx_);
+    ws_.unpark_all(c, $);
+  }
 
 private:
-    bool finished_;
-    waitset<thread_count> ws_;
-    sync_var<thread_count> sync_;
+  bool finished_;
+  waitset<thread_count> ws_;
+  sync_var<thread_count> sync_;
 
-    virtual void deinit(debug_info_param info)
-    {
-        (void)info;
-    }
+  virtual void deinit(debug_info_param info) {
+    (void) info;
+  }
 
-    virtual sema_wakeup_reason wait(bool try_wait, bool is_timed, debug_info_param info)
-    {
-        context& c = ctx();
-        if (finished_)
-        {
-            sync_.acquire(c.threadx_);
-            return sema_wakeup_reason_success;
-        }
-        else if (try_wait)
-        {
-            sync_.acquire(c.threadx_);
-            return sema_wakeup_reason_failed;
-        }
-        else
-        {
-            unpark_reason reason = ws_.park_current(c, is_timed, false, false, info);
-            sync_.acquire(c.threadx_);
-            if (reason == unpark_reason_normal)
-                return sema_wakeup_reason_success;
-            else if (reason == unpark_reason_timeout)
-                return sema_wakeup_reason_timeout;
-            RL_VERIFY(false);
-            return sema_wakeup_reason_failed;
-        }
+  virtual sema_wakeup_reason wait(bool try_wait, bool is_timed, debug_info_param info) {
+    context& c = ctx();
+    if (finished_) {
+      sync_.acquire(c.threadx_);
+      return sema_wakeup_reason_success;
+    } else if (try_wait) {
+      sync_.acquire(c.threadx_);
+      return sema_wakeup_reason_failed;
+    } else {
+      unpark_reason reason = ws_.park_current(c, is_timed, false, false, info);
+      sync_.acquire(c.threadx_);
+      if (reason == unpark_reason_normal)
+        return sema_wakeup_reason_success;
+      else if (reason == unpark_reason_timeout)
+        return sema_wakeup_reason_timeout;
+      RL_VERIFY(false);
+      return sema_wakeup_reason_failed;
     }
+  }
 
-    virtual bool signal(debug_info_param info)
-    {
-        RL_ASSERT_IMPL(false, test_result_thread_signal, "trying to signal a thread", info);
-        return false;
-    }
+  virtual bool signal(debug_info_param info) {
+    RL_ASSERT_IMPL(false, test_result_thread_signal, "trying to signal a thread", info);
+    return false;
+  }
 
-    virtual bool is_signaled(debug_info_param info)
-    {
-        (void)info;
-        return finished_;
-    }
+  virtual bool is_signaled(debug_info_param info) {
+    (void) info;
+    return finished_;
+  }
 
-    virtual void memory_acquire(debug_info_param info)
-    {
-        (void)info;
-        sync_.acquire(ctx().threadx_);
-    }
+  virtual void memory_acquire(debug_info_param info) {
+    (void) info;
+    sync_.acquire(ctx().threadx_);
+  }
 
-    virtual void* prepare_wait(debug_info_param info)
-    {
-        (void)info;
-        return &ws_;
-    }
+  virtual void* prepare_wait(debug_info_param info) {
+    (void) info;
+    return &ws_;
+  }
 };
 
 

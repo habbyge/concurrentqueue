@@ -24,7 +24,7 @@
 #include "../tbb_profiling.h"
 
 namespace tbb {
-    namespace internal {
+namespace internal {
 
 #if TBB_PREVIEW_FLOW_GRAPH_TRACE
 
@@ -163,43 +163,54 @@ static inline void fgt_end_body( void * ) {
 
 #else // TBB_PREVIEW_FLOW_GRAPH_TRACE
 
-static inline void fgt_graph( void * /*g*/ ) { }
+static inline void fgt_graph(void* /*g*/ ) {}
 
-template< typename NodeType >
-static inline void fgt_multioutput_node_desc( const NodeType * /*node*/, const char * /*desc*/ ) { }
+template<typename NodeType>
+static inline void fgt_multioutput_node_desc(const NodeType* /*node*/, const char* /*desc*/ ) {}
 
-template< typename NodeType >
-static inline void fgt_node_desc( const NodeType * /*node*/, const char * /*desc*/ ) { }
+template<typename NodeType>
+static inline void fgt_node_desc(const NodeType* /*node*/, const char* /*desc*/ ) {}
 
-static inline void fgt_graph_desc( void * /*g*/, const char * /*desc*/ ) { }
+static inline void fgt_graph_desc(void* /*g*/, const char* /*desc*/ ) {}
 
-static inline void fgt_body( void * /*node*/, void * /*body*/ ) { }
+static inline void fgt_body(void* /*node*/, void* /*body*/ ) {}
 
-template< typename OutputTuple, int N, typename PortsTuple > 
-static inline void fgt_multioutput_node( string_index /*t*/, void * /*g*/, void * /*input_port*/, PortsTuple & /*ports*/ ) { }
+template<typename OutputTuple, int N, typename PortsTuple>
+static inline void
+fgt_multioutput_node(string_index /*t*/, void* /*g*/, void* /*input_port*/, PortsTuple& /*ports*/ ) {}
 
-template< typename OutputTuple, int N, typename PortsTuple >
-static inline void fgt_multioutput_node_with_body( string_index /*t*/, void * /*g*/, void * /*input_port*/, PortsTuple & /*ports*/, void * /*body*/ ) { }
+template<typename OutputTuple, int N, typename PortsTuple>
+static inline void
+fgt_multioutput_node_with_body(string_index /*t*/, void* /*g*/, void* /*input_port*/, PortsTuple& /*ports*/,
+                               void* /*body*/ ) {}
 
-template< typename InputTuple, int N, typename PortsTuple >
-static inline void fgt_multiinput_node( string_index /*t*/, void * /*g*/, PortsTuple & /*ports*/, void * /*output_port*/ ) { }
+template<typename InputTuple, int N, typename PortsTuple>
+static inline void
+fgt_multiinput_node(string_index /*t*/, void* /*g*/, PortsTuple& /*ports*/, void* /*output_port*/ ) {}
 
-static inline void fgt_node( string_index /*t*/, void * /*g*/, void * /*output_port*/ ) { } 
-static inline void fgt_node( string_index /*t*/, void * /*g*/, void * /*input_port*/, void * /*output_port*/ ) { } 
-static inline void  fgt_node( string_index /*t*/, void * /*g*/, void * /*input_port*/, void * /*decrement_port*/, void * /*output_port*/ ) { }
+static inline void fgt_node(string_index /*t*/, void* /*g*/, void* /*output_port*/ ) {}
 
-static inline void fgt_node_with_body( string_index /*t*/, void * /*g*/, void * /*output_port*/, void * /*body*/ ) { }
-static inline void fgt_node_with_body( string_index /*t*/, void * /*g*/, void * /*input_port*/, void * /*output_port*/, void * /*body*/ ) { }
+static inline void fgt_node(string_index /*t*/, void* /*g*/, void* /*input_port*/, void* /*output_port*/ ) {}
 
-static inline void fgt_make_edge( void * /*output_port*/, void * /*input_port*/ ) { }
-static inline void fgt_remove_edge( void * /*output_port*/, void * /*input_port*/ ) { }
+static inline void
+fgt_node(string_index /*t*/, void* /*g*/, void* /*input_port*/, void* /*decrement_port*/, void* /*output_port*/ ) {}
 
-static inline void fgt_begin_body( void * /*body*/ ) { }
-static inline void fgt_end_body( void *  /*body*/) { }
+static inline void fgt_node_with_body(string_index /*t*/, void* /*g*/, void* /*output_port*/, void* /*body*/ ) {}
+
+static inline void
+fgt_node_with_body(string_index /*t*/, void* /*g*/, void* /*input_port*/, void* /*output_port*/, void* /*body*/ ) {}
+
+static inline void fgt_make_edge(void* /*output_port*/, void* /*input_port*/ ) {}
+
+static inline void fgt_remove_edge(void* /*output_port*/, void* /*input_port*/ ) {}
+
+static inline void fgt_begin_body(void* /*body*/ ) {}
+
+static inline void fgt_end_body(void*  /*body*/) {}
 
 #endif // TBB_PREVIEW_FLOW_GRAPH_TRACE
 
-    } // namespace internal
+} // namespace internal
 } // namespace tbb
 
 #endif

@@ -16,38 +16,32 @@
 #include "base.hpp"
 
 
-namespace rl
-{
+namespace rl {
 
 
 unsigned const primes[16] = {1, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53};
 
-struct random_generator
-{
-    unsigned k;
-    unsigned c;
-    unsigned x;
+struct random_generator {
+  unsigned k;
+  unsigned c;
+  unsigned x;
 
-    void seed(iteration_t s)
-    {
-        k = ((unsigned)(s >> 32) & 0xf) + 8;
-        c = primes[((unsigned)(s >> 36) & 0xf)];
-        x = (unsigned)((s + 1) * 0x95949347 + c);
-    }
+  void seed(iteration_t s) {
+    k = ((unsigned) (s >> 32) & 0xf) + 8;
+    c = primes[((unsigned) (s >> 36) & 0xf)];
+    x = (unsigned) ((s + 1) * 0x95949347 + c);
+  }
 
-    unsigned rand()
-    {
-        return ((x = x + c + (x << k)) >> 16);
-    }
+  unsigned rand() {
+    return ((x = x + c + (x << k)) >> 16);
+  }
 
-    template<typename T, T max>
-    RL_INLINE
-    T get()
-    {
-        return static_cast<T>(rand() % max);
-    }
+  template<typename T, T max>
+  RL_INLINE
+  T get() {
+    return static_cast<T>(rand() % max);
+  }
 };
-
 
 
 }

@@ -19,6 +19,7 @@
 */
 
 #include "tbb/tbb_config.h"
+
 #if __TBB_TSX_AVAILABLE
 #include "tbb/spin_rw_mutex.h"
 #include "tbb/tbb_machine.h"
@@ -30,12 +31,12 @@
 // added to the read-set of the operation.  If 1, will add the test just before
 // the transaction is ended.
 #ifndef __TBB_RW_MUTEX_DELAY_TEST
-    #define __TBB_RW_MUTEX_DELAY_TEST 1
+#define __TBB_RW_MUTEX_DELAY_TEST 1
 #endif
 
 #if defined(_MSC_VER) && defined(_Wp64)
     // Workaround for overzealous compiler warnings in /Wp64 mode
-    #pragma warning (disable: 4244)
+#pragma warning (disable: 4244)
 #endif
 
 namespace tbb {

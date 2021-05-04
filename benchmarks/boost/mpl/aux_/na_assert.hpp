@@ -25,7 +25,9 @@
     BOOST_MPL_ASSERT_NOT((boost::mpl::is_na<type>)) \
 /**/
 #else
+
 #   include <boost/static_assert.hpp>
+
 #   define BOOST_MPL_AUX_ASSERT_NOT_NA(x) \
     BOOST_STATIC_ASSERT(!boost::mpl::is_na<x>::value) \
 /**/

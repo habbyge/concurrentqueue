@@ -7,103 +7,95 @@
 #include "../memory_manager/memory_manager_kernel_abstract.h"
 #include "memory_manager_global_kernel_abstract.h"
 
-namespace dlib
-{
-    template <
-        typename T,
-        typename factory
-        >
-    class memory_manager_global_kernel_1
-    {
-        /*!      
-            INITIAL VALUE
-                - *global_mm == get_global_memory_manager()
+namespace dlib {
+template<
+    typename T,
+    typename factory
+>
+class memory_manager_global_kernel_1 {
+  /*!
+      INITIAL VALUE
+          - *global_mm == get_global_memory_manager()
 
-            CONVENTION
-                - global_mm->get_number_of_allocations() == get_number_of_allocations()
-                - *global_mm == get_global_memory_manager()
-        !*/
-        
-        public:
+      CONVENTION
+          - global_mm->get_number_of_allocations() == get_number_of_allocations()
+          - *global_mm == get_global_memory_manager()
+  !*/
 
-            typedef typename factory::template return_type<T>::type mm_global_type; 
+public:
 
-            typedef T type;
+  typedef typename factory::template return_type<T>::type mm_global_type;
 
-            template <typename U>
-            struct rebind {
-                typedef memory_manager_global_kernel_1<U,factory> other;
-            };
+  typedef T type;
 
-            memory_manager_global_kernel_1(
-            ) :
-                global_mm(factory::template get_instance<T>())
-            {}
+  template<typename U>
+  struct rebind {
+    typedef memory_manager_global_kernel_1<U, factory> other;
+  };
 
-            virtual ~memory_manager_global_kernel_1(
-            )  {}
+  memory_manager_global_kernel_1(
+  ) :
+      global_mm(factory::template get_instance<T>()) {}
 
-            size_t get_number_of_allocations (
-            ) const { return global_mm->get_number_of_allocations(); }
+  virtual ~memory_manager_global_kernel_1(
+  ) {}
 
-            mm_global_type& get_global_memory_manager (
-            ) { return *global_mm; }
+  size_t get_number_of_allocations(
+  ) const { return global_mm->get_number_of_allocations(); }
 
-            T* allocate (
-            )
-            {
-                return global_mm->allocate(); 
-            }
+  mm_global_type& get_global_memory_manager(
+  ) { return *global_mm; }
 
-            void deallocate (
-                T* item
-            )
-            {
-                global_mm->deallocate(item); 
-            }
+  T* allocate(
+  ) {
+    return global_mm->allocate();
+  }
 
-            T* allocate_array (
-                size_t size
-            ) 
-            { 
-                return global_mm->allocate_array(size); 
-            }
+  void deallocate(
+      T* item
+  ) {
+    global_mm->deallocate(item);
+  }
 
-            void deallocate_array (
-                T* item
-            ) 
-            { 
-                global_mm->deallocate_array(item); 
-            }
+  T* allocate_array(
+      size_t size
+  ) {
+    return global_mm->allocate_array(size);
+  }
 
-            void swap (
-                memory_manager_global_kernel_1& item
-            )
-            {
-                exchange(item.global_mm, global_mm);
-            }
+  void deallocate_array(
+      T* item
+  ) {
+    global_mm->deallocate_array(item);
+  }
 
-        private:
+  void swap(
+      memory_manager_global_kernel_1& item
+  ) {
+    exchange(item.global_mm, global_mm);
+  }
 
-            mm_global_type* global_mm;
+private:
+
+  mm_global_type* global_mm;
 
 
-            // restricted functions
-            memory_manager_global_kernel_1(memory_manager_global_kernel_1&);        // copy constructor
-            memory_manager_global_kernel_1& operator=(memory_manager_global_kernel_1&);    // assignment operator
-    };
+  // restricted functions
+  memory_manager_global_kernel_1(memory_manager_global_kernel_1&);        // copy constructor
+  memory_manager_global_kernel_1& operator=(memory_manager_global_kernel_1&);    // assignment operator
+};
 
-    template <
-        typename T,
-        typename factory
-        >
-    inline void swap (
-        memory_manager_global_kernel_1<T,factory>& a, 
-        memory_manager_global_kernel_1<T,factory>& b 
-    ) { a.swap(b); }   
-    /*!
-        provides a global swap function
-    !*/
+template<
+    typename T,
+    typename factory
+>
+inline void swap(
+    memory_manager_global_kernel_1<T, factory>& a,
+    memory_manager_global_kernel_1<T, factory>& b
+) { a.swap(b); }
+/*!
+    provides a global swap function
+!*/
 
 }
 

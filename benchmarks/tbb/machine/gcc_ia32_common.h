@@ -25,13 +25,14 @@
 //uses __TBB_Log2 and contains the assert and remove the assert from here and all other
 //platform-specific headers.
 //TODO: Check if use of gcc intrinsic gives a better chance for cross call optimizations
-template <typename T>
-static inline intptr_t __TBB_machine_lg( T x ) {
-    __TBB_ASSERT(x>0, "The logarithm of a non-positive value is undefined.");
-    uintptr_t j;
-    __asm__("bsr %1,%0" : "=r"(j) : "r"((uintptr_t)x));
-    return j;
+template<typename T>
+static inline intptr_t __TBB_machine_lg(T x) {
+  __TBB_ASSERT(x > 0, "The logarithm of a non-positive value is undefined.");
+  uintptr_t j;
+  __asm__("bsr %1,%0" : "=r"(j) : "r"((uintptr_t) x));
+  return j;
 }
+
 #define __TBB_Log2(V)  __TBB_machine_lg(V)
 
 #ifndef __TBB_Pause
@@ -44,12 +45,13 @@ static inline intptr_t __TBB_machine_lg( T x ) {
 //instruction decode slots from the other hyperthread.
 
 //TODO: check if use of gcc __builtin_ia32_pause intrinsic gives a "some how" better performing code
-static inline void __TBB_machine_pause( int32_t delay ) {
-    for (int32_t i = 0; i < delay; i++) {
-       __asm__ __volatile__("pause;");
-    }
-    return;
+static inline void __TBB_machine_pause(int32_t delay) {
+  for (int32_t i = 0; i < delay; i++) {
+    __asm__ __volatile__("pause;");
+  }
+  return;
 }
+
 #define __TBB_Pause(V) __TBB_machine_pause(V)
 #endif /* !__TBB_Pause */
 
@@ -60,36 +62,38 @@ namespace tbb {
 namespace internal {
 class cpu_ctl_env {
 private:
-    int     mxcsr;
-    short   x87cw;
-    static const int MXCSR_CONTROL_MASK = ~0x3f; /* all except last six status bits */
+  int mxcsr;
+  short x87cw;
+  static const int MXCSR_CONTROL_MASK = ~0x3f; /* all except last six status bits */
 public:
-    bool operator!=( const cpu_ctl_env& ctl ) const { return mxcsr != ctl.mxcsr || x87cw != ctl.x87cw; }
-    void get_env() {
-    #if __TBB_ICC_12_0_INL_ASM_FSTCW_BROKEN
-        cpu_ctl_env loc_ctl;
-        __asm__ __volatile__ (
-                "stmxcsr %0\n\t"
-                "fstcw %1"
-                : "=m"(loc_ctl.mxcsr), "=m"(loc_ctl.x87cw)
-        );
-        *this = loc_ctl;
-    #else
-        __asm__ __volatile__ (
-                "stmxcsr %0\n\t"
-                "fstcw %1"
-                : "=m"(mxcsr), "=m"(x87cw)
-        );
-    #endif
-        mxcsr &= MXCSR_CONTROL_MASK;
-    }
-    void set_env() const {
-        __asm__ __volatile__ (
-                "ldmxcsr %0\n\t"
-                "fldcw %1"
-                : : "m"(mxcsr), "m"(x87cw)
-        );
-    }
+  bool operator!=(const cpu_ctl_env& ctl) const { return mxcsr != ctl.mxcsr || x87cw != ctl.x87cw; }
+
+  void get_env() {
+#if __TBB_ICC_12_0_INL_ASM_FSTCW_BROKEN
+    cpu_ctl_env loc_ctl;
+    __asm__ __volatile__ (
+            "stmxcsr %0\n\t"
+            "fstcw %1"
+            : "=m"(loc_ctl.mxcsr), "=m"(loc_ctl.x87cw)
+    );
+    *this = loc_ctl;
+#else
+    __asm__ __volatile__ (
+    "stmxcsr %0\n\t"
+    "fstcw %1"
+    : "=m"(mxcsr), "=m"(x87cw)
+    );
+#endif
+    mxcsr &= MXCSR_CONTROL_MASK;
+  }
+
+  void set_env() const {
+    __asm__ __volatile__ (
+    "ldmxcsr %0\n\t"
+    "fldcw %1"
+    : : "m"(mxcsr), "m"(x87cw)
+    );
+  }
 };
 } // namespace internal
 } // namespace tbb

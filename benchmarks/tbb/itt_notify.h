@@ -26,9 +26,9 @@
 #if DO_ITT_NOTIFY
 
 #if _WIN32||_WIN64
-    #ifndef UNICODE
-        #define UNICODE
-    #endif
+#ifndef UNICODE
+#define UNICODE
+#endif
 #endif /* WIN */
 
 #ifndef INTEL_ITTNOTIFY_API_PRIVATE
@@ -40,9 +40,9 @@
 extern "C" void __itt_fini_ittlib(void);
 
 #if _WIN32||_WIN64
-    #undef _T
-    #undef __itt_event_create
-    #define __itt_event_create __itt_event_createA
+#undef _T
+#undef __itt_event_create
+#define __itt_event_create __itt_event_createA
 #endif /* WIN */
 
 
@@ -54,16 +54,16 @@ extern "C" void __itt_fini_ittlib(void);
 
 namespace tbb {
 //! Unicode support
-#if (_WIN32||_WIN64) && !__MINGW32__
-    //! Unicode character type. Always wchar_t on Windows.
-    /** We do not use typedefs from Windows TCHAR family to keep consistence of TBB coding style. **/
-    typedef wchar_t tchar;
-    //! Standard Windows macro to markup the string literals. 
-    #define _T(string_literal) L ## string_literal
+#if (_WIN32 || _WIN64) && !__MINGW32__
+//! Unicode character type. Always wchar_t on Windows.
+/** We do not use typedefs from Windows TCHAR family to keep consistence of TBB coding style. **/
+typedef wchar_t tchar;
+//! Standard Windows macro to markup the string literals.
+#define _T(string_literal) L ## string_literal
 #else /* !WIN */
-    typedef char tchar;
-    //! Standard Windows style macro to markup the string literals.
-    #define _T(string_literal) string_literal
+typedef char tchar;
+//! Standard Windows style macro to markup the string literals.
+#define _T(string_literal) string_literal
 #endif /* !WIN */
 } // namespace tbb
 
@@ -110,7 +110,7 @@ namespace tbb {
 
 #else /* !DO_ITT_NOTIFY */
 
-#define ITT_NOTIFY(name,obj)            ((void)0)
+#define ITT_NOTIFY(name, obj)            ((void)0)
 #define ITT_THREAD_SET_NAME(name)       ((void)0)
 #define ITT_FINI_ITTLIB()               ((void)0)
 #define ITT_SYNC_CREATE(obj, type, name) ((void)0)
@@ -123,6 +123,7 @@ namespace tbb {
 namespace tbb {
 namespace internal {
 int __TBB_load_ittnotify();
-}}
+}
+}
 
 #endif /* _TBB_ITT_NOTIFY */

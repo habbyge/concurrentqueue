@@ -94,12 +94,12 @@
 // tbb_config.h should be included the first since it contains macro definitions used in other headers
 #include "tbb_config.h"
 
-#if _MSC_VER >=1400
-    #define __TBB_EXPORTED_FUNC   __cdecl
-    #define __TBB_EXPORTED_METHOD __thiscall
+#if _MSC_VER >= 1400
+#define __TBB_EXPORTED_FUNC   __cdecl
+#define __TBB_EXPORTED_METHOD __thiscall
 #else
-    #define __TBB_EXPORTED_FUNC
-    #define __TBB_EXPORTED_METHOD
+#define __TBB_EXPORTED_FUNC
+#define __TBB_EXPORTED_METHOD
 #endif
 
 #if __INTEL_COMPILER || _MSC_VER
@@ -119,42 +119,44 @@
 #include <cstddef>      /* Need size_t and ptrdiff_t */
 
 #if _MSC_VER
-    #define __TBB_tbb_windef_H
-    #include "internal/_tbb_windef.h"
-    #undef __TBB_tbb_windef_H
+#define __TBB_tbb_windef_H
+#include "internal/_tbb_windef.h"
+#undef __TBB_tbb_windef_H
 #endif
-#if !defined(_MSC_VER) || _MSC_VER>=1600
-    #include <stdint.h>
+#if !defined(_MSC_VER) || _MSC_VER >= 1600
+
+#include <stdint.h>
+
 #endif
 
 //! Type for an assertion handler
-typedef void(*assertion_handler_type)( const char* filename, int line, const char* expression, const char * comment );
+typedef void(* assertion_handler_type)(const char* filename, int line, const char* expression, const char* comment);
 
 #if TBB_USE_ASSERT
 
-     #define __TBB_ASSERT_NS(predicate,message,ns) ((predicate)?((void)0) : ns::assertion_failure(__FILE__,__LINE__,#predicate,message))
-    //! Assert that x is true.
-    /** If x is false, print assertion failure message.
-        If the comment argument is not NULL, it is printed as part of the failure message.
-        The comment argument has no other effect. */
+#define __TBB_ASSERT_NS(predicate,message,ns) ((predicate)?((void)0) : ns::assertion_failure(__FILE__,__LINE__,#predicate,message))
+//! Assert that x is true.
+/** If x is false, print assertion failure message.
+    If the comment argument is not NULL, it is printed as part of the failure message.
+    The comment argument has no other effect. */
 #if __TBBMALLOC_BUILD
 namespace rml { namespace internal {
-    #define __TBB_ASSERT(predicate,message) __TBB_ASSERT_NS(predicate,message,rml::internal)
+#define __TBB_ASSERT(predicate,message) __TBB_ASSERT_NS(predicate,message,rml::internal)
 #else
 namespace tbb {
-    #define __TBB_ASSERT(predicate,message) __TBB_ASSERT_NS(predicate,message,tbb)
+#define __TBB_ASSERT(predicate,message) __TBB_ASSERT_NS(predicate,message,tbb)
 #endif
 
-    #define __TBB_ASSERT_EX __TBB_ASSERT
+#define __TBB_ASSERT_EX __TBB_ASSERT
 
-    //! Set assertion handler and return previous value of it.
-    assertion_handler_type __TBB_EXPORTED_FUNC set_assertion_handler( assertion_handler_type new_handler );
+//! Set assertion handler and return previous value of it.
+assertion_handler_type __TBB_EXPORTED_FUNC set_assertion_handler( assertion_handler_type new_handler );
 
-    //! Process an assertion failure.
-    /** Normally called from __TBB_ASSERT macro.
-        If assertion handler is null, print message for assertion failure and abort.
-        Otherwise call the assertion handler. */
-    void __TBB_EXPORTED_FUNC assertion_failure( const char* filename, int line, const char* expression, const char* comment );
+//! Process an assertion failure.
+/** Normally called from __TBB_ASSERT macro.
+    If assertion handler is null, print message for assertion failure and abort.
+    Otherwise call the assertion handler. */
+void __TBB_EXPORTED_FUNC assertion_failure( const char* filename, int line, const char* expression, const char* comment );
 
 #if __TBBMALLOC_BUILD
 }}  // namespace rml::internal
@@ -163,42 +165,42 @@ namespace tbb {
 #endif
 #else /* !TBB_USE_ASSERT */
 
-    //! No-op version of __TBB_ASSERT.
-    #define __TBB_ASSERT(predicate,comment) ((void)0)
-    //! "Extended" version is useful to suppress warnings if a variable is only used with an assert
-    #define __TBB_ASSERT_EX(predicate,comment) ((void)(1 && (predicate)))
+//! No-op version of __TBB_ASSERT.
+#define __TBB_ASSERT(predicate, comment) ((void)0)
+//! "Extended" version is useful to suppress warnings if a variable is only used with an assert
+#define __TBB_ASSERT_EX(predicate, comment) ((void)(1 && (predicate)))
 
 #endif /* !TBB_USE_ASSERT */
 
 //! The namespace tbb contains all components of the library.
 namespace tbb {
 
-#if _MSC_VER && _MSC_VER<1600
-    namespace internal {
-        typedef __int8 int8_t;
-        typedef __int16 int16_t;
-        typedef __int32 int32_t;
-        typedef __int64 int64_t;
-        typedef unsigned __int8 uint8_t;
-        typedef unsigned __int16 uint16_t;
-        typedef unsigned __int32 uint32_t;
-        typedef unsigned __int64 uint64_t;
-    } // namespace internal
+#if _MSC_VER && _MSC_VER < 1600
+namespace internal {
+    typedef __int8 int8_t;
+    typedef __int16 int16_t;
+    typedef __int32 int32_t;
+    typedef __int64 int64_t;
+    typedef unsigned __int8 uint8_t;
+    typedef unsigned __int16 uint16_t;
+    typedef unsigned __int32 uint32_t;
+    typedef unsigned __int64 uint64_t;
+} // namespace internal
 #else /* Posix */
-    namespace internal {
-        using ::int8_t;
-        using ::int16_t;
-        using ::int32_t;
-        using ::int64_t;
-        using ::uint8_t;
-        using ::uint16_t;
-        using ::uint32_t;
-        using ::uint64_t;
-    } // namespace internal
+namespace internal {
+using ::int8_t;
+using ::int16_t;
+using ::int32_t;
+using ::int64_t;
+using ::uint8_t;
+using ::uint16_t;
+using ::uint32_t;
+using ::uint64_t;
+} // namespace internal
 #endif /* Posix */
 
-    using std::size_t;
-    using std::ptrdiff_t;
+using std::size_t;
+using std::ptrdiff_t;
 
 //! The function returns the interface version of the TBB shared library being used.
 /**
@@ -224,21 +226,24 @@ class split {
  */
 class proportional_split {
 public:
-    proportional_split(size_t _left = 1, size_t _right = 1) : my_left(_left), my_right(_right) { }
-    proportional_split(split) : my_left(1), my_right(1) { }
+  proportional_split(size_t _left = 1, size_t _right = 1) : my_left(_left), my_right(_right) {}
 
-    size_t left() const { return my_left; }
-    size_t right() const { return my_right; }
+  proportional_split(split) : my_left(1), my_right(1) {}
 
-    void set_proportion(size_t _left, size_t _right) {
-        my_left = _left;
-        my_right = _right;
-    }
+  size_t left() const { return my_left; }
 
-    // used when range does not support proportional split
-    operator split() const { return split(); }
+  size_t right() const { return my_right; }
+
+  void set_proportion(size_t _left, size_t _right) {
+    my_left = _left;
+    my_right = _right;
+  }
+
+  // used when range does not support proportional split
+  operator split() const { return split(); }
+
 private:
-    size_t my_left, my_right;
+  size_t my_left, my_right;
 };
 
 /**
@@ -276,13 +281,16 @@ const size_t NFS_MaxLineSize = 128;
 
 template<class T, size_t S, size_t R>
 struct padded_base : T {
-    char pad[S - R];
+  char pad[S - R];
 };
-template<class T, size_t S> struct padded_base<T, S, 0> : T {};
+template<class T, size_t S>
+struct padded_base<T, S, 0> : T {
+};
 
 //! Pads type T to fill out to a multiple of cache line size.
 template<class T, size_t S = NFS_MaxLineSize>
-struct padded : padded_base<T, S, sizeof(T) % S> {};
+struct padded : padded_base<T, S, sizeof(T) % S> {
+};
 
 //! Extended variant of the standard offsetof macro
 /** The standard offsetof macro is not sufficient for TBB as it can be used for
@@ -295,23 +303,25 @@ struct padded : padded_base<T, S, sizeof(T) % S> {};
     (*reinterpret_cast<class_name*>((char*)member_addr - __TBB_offsetof(class_name, member_name)))
 
 //! Throws std::runtime_error with what() returning error_code description prefixed with aux_info
-void __TBB_EXPORTED_FUNC handle_perror( int error_code, const char* aux_info );
+void __TBB_EXPORTED_FUNC handle_perror(int error_code, const char* aux_info);
 
 #if TBB_USE_EXCEPTIONS
-    #define __TBB_TRY try
-    #define __TBB_CATCH(e) catch(e)
-    #define __TBB_THROW(e) throw e
-    #define __TBB_RETHROW() throw
+#define __TBB_TRY try
+#define __TBB_CATCH(e) catch(e)
+#define __TBB_THROW(e) throw e
+#define __TBB_RETHROW() throw
 #else /* !TBB_USE_EXCEPTIONS */
-    inline bool __TBB_false() { return false; }
-    #define __TBB_TRY
-    #define __TBB_CATCH(e) if ( tbb::internal::__TBB_false() )
-    #define __TBB_THROW(e) ((void)0)
-    #define __TBB_RETHROW() ((void)0)
+
+inline bool __TBB_false() { return false; }
+
+#define __TBB_TRY
+#define __TBB_CATCH(e) if ( tbb::internal::__TBB_false() )
+#define __TBB_THROW(e) ((void)0)
+#define __TBB_RETHROW() ((void)0)
 #endif /* !TBB_USE_EXCEPTIONS */
 
 //! Report a runtime warning.
-void __TBB_EXPORTED_FUNC runtime_warning( const char* format, ... );
+void __TBB_EXPORTED_FUNC runtime_warning(const char* format, ...);
 
 #if TBB_USE_ASSERT
 static void* const poisoned_ptr = reinterpret_cast<void*>(-1);
@@ -325,8 +335,10 @@ inline void poison_pointer( T* __TBB_atomic & p ) { p = reinterpret_cast<T*>(poi
 template<typename T>
 inline bool is_poisoned( T* p ) { return p == reinterpret_cast<T*>(poisoned_ptr); }
 #else
+
 template<typename T>
-inline void poison_pointer( T* __TBB_atomic & ) {/*do nothing*/}
+inline void poison_pointer(T* __TBB_atomic&) {/*do nothing*/}
+
 #endif /* !TBB_USE_ASSERT */
 
 //! Cast between unrelated pointer types.
@@ -335,57 +347,62 @@ inline void poison_pointer( T* __TBB_atomic & ) {/*do nothing*/}
 // T is a pointer type because it will be explicitly provided by the programmer as a template argument;
 // U is a referent type to enable the compiler to check that "ptr" is a pointer, deducing U in the process.
 template<typename T, typename U>
-inline T punned_cast( U* ptr ) {
-    uintptr_t x = reinterpret_cast<uintptr_t>(ptr);
-    return reinterpret_cast<T>(x);
+inline T punned_cast(U* ptr) {
+  uintptr_t x = reinterpret_cast<uintptr_t>(ptr);
+  return reinterpret_cast<T>(x);
 }
 
 //! Base class for types that should not be assigned.
 class no_assign {
-    // Deny assignment
-    void operator=( const no_assign& );
+  // Deny assignment
+  void operator=(const no_assign&);
+
 public:
 #if __GNUC__
-    //! Explicitly define default construction, because otherwise gcc issues gratuitous warning.
-    no_assign() {}
+  //! Explicitly define default construction, because otherwise gcc issues gratuitous warning.
+  no_assign() {}
 #endif /* __GNUC__ */
 };
 
 //! Base class for types that should not be copied or assigned.
-class no_copy: no_assign {
-    //! Deny copy construction
-    no_copy( const no_copy& );
+class no_copy : no_assign {
+  //! Deny copy construction
+  no_copy(const no_copy&);
+
 public:
-    //! Allow default construction
-    no_copy() {}
+  //! Allow default construction
+  no_copy() {}
 };
 
 #if TBB_DEPRECATED_MUTEX_COPYING
 class mutex_copy_deprecated_and_disabled {};
 #else
+
 // By default various implementations of mutexes are not copy constructible
 // and not copy assignable.
-class mutex_copy_deprecated_and_disabled : no_copy {};
+class mutex_copy_deprecated_and_disabled : no_copy {
+};
+
 #endif
 
 //! A function to check if passed in pointer is aligned on a specific border
 template<typename T>
 inline bool is_aligned(T* pointer, uintptr_t alignment) {
-    return 0==((uintptr_t)pointer & (alignment-1));
+  return 0 == ((uintptr_t) pointer & (alignment - 1));
 }
 
 //! A function to check if passed integer is a power of 2
 template<typename integer_type>
 inline bool is_power_of_two(integer_type arg) {
-    return arg && (0 == (arg & (arg - 1)));
+  return arg && (0 == (arg & (arg - 1)));
 }
 
 //! A function to compute arg modulo divisor where divisor is a power of 2.
 template<typename argument_integer_type, typename divisor_integer_type>
 inline argument_integer_type modulo_power_of_two(argument_integer_type arg, divisor_integer_type divisor) {
-    // Divisor is assumed to be a power of two (which is valid for current uses).
-    __TBB_ASSERT( is_power_of_two(divisor), "Divisor should be a power of two" );
-    return (arg & (divisor - 1));
+  // Divisor is assumed to be a power of two (which is valid for current uses).
+  __TBB_ASSERT(is_power_of_two(divisor), "Divisor should be a power of two");
+  return (arg & (divisor - 1));
 }
 
 
@@ -394,19 +411,20 @@ inline argument_integer_type modulo_power_of_two(argument_integer_type arg, divi
 // determines whether i==j<<k for some nonnegative k (so i==j yields true).
 template<typename argument_integer_type, typename divisor_integer_type>
 inline bool is_power_of_two_factor(argument_integer_type arg, divisor_integer_type divisor) {
-    // Divisor is assumed to be a power of two (which is valid for current uses).
-    __TBB_ASSERT( is_power_of_two(divisor), "Divisor should be a power of two" );
-    return 0 == (arg & (arg - divisor));
+  // Divisor is assumed to be a power of two (which is valid for current uses).
+  __TBB_ASSERT(is_power_of_two(divisor), "Divisor should be a power of two");
+  return 0 == (arg & (arg - divisor));
 }
 
 //! Utility template function to prevent "unused" warnings by various compilers.
 template<typename T>
-void suppress_unused_warning( const T& ) {}
+void suppress_unused_warning(const T&) {}
 
 // Struct to be used as a version tag for inline functions.
 /** Version tag can be necessary to prevent loader on Linux from using the wrong
     symbol in debug builds (when inline functions are compiled as out-of-line). **/
-struct version_tag_v3 {};
+struct version_tag_v3 {
+};
 
 typedef version_tag_v3 version_tag;
 
@@ -430,7 +448,7 @@ namespace internal {
 //! Class for determining type of std::allocator<T>::value_type.
 template<typename T>
 struct allocator_type {
-    typedef T value_type;
+  typedef T value_type;
 };
 
 #if _MSC_VER
@@ -443,9 +461,9 @@ struct allocator_type<const T> {
 
 // Ad-hoc implementation of true_type & false_type
 // Intended strictly for internal use! For public APIs (traits etc), use C++11 analogues.
-template <bool v>
+template<bool v>
 struct bool_constant {
-    static /*constexpr*/ const bool value = v;
+  static /*constexpr*/ const bool value = v;
 };
 typedef bool_constant<true> true_type;
 typedef bool_constant<false> false_type;
@@ -454,17 +472,17 @@ typedef bool_constant<false> false_type;
 using std::allocator_traits;
 #else
 template<typename allocator>
-struct allocator_traits{
-    typedef tbb::internal::false_type propagate_on_container_move_assignment;
+struct allocator_traits {
+  typedef tbb::internal::false_type propagate_on_container_move_assignment;
 };
 #endif
 
 //! A template to select either 32-bit or 64-bit constant as compile time, depending on machine word size.
-template <unsigned u, unsigned long long ull >
+template<unsigned u, unsigned long long ull>
 struct select_size_t_constant {
-    //Explicit cast is needed to avoid compiler warnings about possible truncation.
-    //The value of the right size,   which is selected by ?:, is anyway not truncated or promoted.
-    static const size_t value = (size_t)((sizeof(size_t)==sizeof(u)) ? u : ull);
+  //Explicit cast is needed to avoid compiler warnings about possible truncation.
+  //The value of the right size,   which is selected by ?:, is anyway not truncated or promoted.
+  static const size_t value = (size_t)((sizeof(size_t) == sizeof(u)) ? u : ull);
 };
 
 #if __TBB_CPP11_RVALUE_REF_PRESENT
@@ -473,32 +491,39 @@ using std::move;
 // libc++ defines "pre-C++11 move" similarly to our; use it to avoid name conflicts in some cases.
 using std::_LIBCPP_NAMESPACE::move;
 #else
-template <typename T>
-T& move( T& x ) { return x; }
+
+template<typename T>
+T& move(T& x) { return x; }
+
 #endif
 
-template <bool condition>
+template<bool condition>
 struct STATIC_ASSERTION_FAILED;
 
-template <>
-struct STATIC_ASSERTION_FAILED<false> { enum {value=1};};
+template<>
+struct STATIC_ASSERTION_FAILED<false> {
+  enum {
+    value = 1
+  };
+};
 
 template<>
 struct STATIC_ASSERTION_FAILED<true>; //intentionally left undefined to cause compile time error
 
 //! @endcond
-}} // namespace tbb::internal
+}
+} // namespace tbb::internal
 
 #if    __TBB_STATIC_ASSERT_PRESENT
 #define __TBB_STATIC_ASSERT(condition,msg) static_assert(condition,msg)
 #else
 //please note condition is intentionally inverted to get a bit more understandable error msg
-#define __TBB_STATIC_ASSERT_IMPL1(condition,msg,line)       \
+#define __TBB_STATIC_ASSERT_IMPL1(condition, msg, line)       \
     enum {static_assert_on_line_##line = tbb::internal::STATIC_ASSERTION_FAILED<!(condition)>::value}
 
-#define __TBB_STATIC_ASSERT_IMPL(condition,msg,line) __TBB_STATIC_ASSERT_IMPL1(condition,msg,line)
+#define __TBB_STATIC_ASSERT_IMPL(condition, msg, line) __TBB_STATIC_ASSERT_IMPL1(condition,msg,line)
 //! Verify at compile time that passed in condition is hold
-#define __TBB_STATIC_ASSERT(condition,msg) __TBB_STATIC_ASSERT_IMPL(condition,msg,__LINE__)
+#define __TBB_STATIC_ASSERT(condition, msg) __TBB_STATIC_ASSERT_IMPL(condition,msg,__LINE__)
 #endif
 
 #endif /* RC_INVOKED */

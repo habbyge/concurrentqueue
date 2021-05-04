@@ -32,170 +32,176 @@ namespace internal {
     declare instantiation member_intrusive_list<T> as a friend.
     This class implements a limited subset of std::list interface. **/
 struct intrusive_list_node {
-    intrusive_list_node *my_prev_node,
-                        *my_next_node;
+  intrusive_list_node* my_prev_node,
+      * my_next_node;
 #if TBB_USE_ASSERT
-    intrusive_list_node () { my_prev_node = my_next_node = this; }
+  intrusive_list_node () { my_prev_node = my_next_node = this; }
 #endif /* TBB_USE_ASSERT */
 };
 
 //! List of element of type T, where T is derived from intrusive_list_node
 /** The class is not thread safe. **/
-template <class List, class T>
+template<class List, class T>
 class intrusive_list_base {
-    //! Pointer to the head node
-    intrusive_list_node my_head;
+  //! Pointer to the head node
+  intrusive_list_node my_head;
 
-    //! Number of list elements
-    size_t my_size;
+  //! Number of list elements
+  size_t my_size;
 
-    static intrusive_list_node& node ( T& item ) { return List::node(item); }
+  static intrusive_list_node& node(T& item) { return List::node(item); }
 
-    static T& item ( intrusive_list_node* node ) { return List::item(node); }
+  static T& item(intrusive_list_node* node) { return List::item(node); }
 
-    template<class Iterator>
-    class iterator_impl {
-        Iterator& self () { return *static_cast<Iterator*>(this); }
+  template<class Iterator>
+  class iterator_impl {
+    Iterator& self() { return *static_cast<Iterator*>(this); }
 
-        //! Node the iterator points to at the moment
-        intrusive_list_node *my_pos;
+    //! Node the iterator points to at the moment
+    intrusive_list_node* my_pos;
 
-    protected:
-        iterator_impl (intrusive_list_node* pos )
-            :  my_pos(pos)
-        {}
+  protected:
+    iterator_impl(intrusive_list_node* pos)
+        : my_pos(pos) {}
 
-        T& item () const {
-            return intrusive_list_base::item(my_pos);
-        }
-
-    public:
-        iterator_impl () :  my_pos(NULL) {}
-
-        Iterator& operator = ( const Iterator& it ) {
-            return my_pos = it.my_pos;
-        }
-
-        Iterator& operator = ( const T& val ) {
-            return my_pos = &node(val);
-        }
-
-        bool operator == ( const Iterator& it ) const {
-            return my_pos == it.my_pos;
-        }
-
-        bool operator != ( const Iterator& it ) const {
-            return my_pos != it.my_pos;
-        }
-
-        Iterator& operator++ () {
-            my_pos = my_pos->my_next_node;
-            return self();
-        }
-
-        Iterator& operator-- () {
-            my_pos = my_pos->my_prev_node;
-            return self();
-        }
-
-        Iterator operator++ ( int ) {
-            Iterator result = self();
-            ++(*this);
-            return result;
-        }
-
-        Iterator operator-- ( int ) {
-            Iterator result = self();
-            --(*this);
-            return result;
-        }
-    }; // intrusive_list_base::iterator_impl
-
-    void assert_ok () const {
-        __TBB_ASSERT( (my_head.my_prev_node == &my_head && !my_size) || 
-                      (my_head.my_next_node != &my_head && my_size >0), "intrusive_list_base corrupted" );
-#if TBB_USE_ASSERT >= 2
-        size_t i = 0;
-        for ( intrusive_list_node *n = my_head.my_next_node; n != &my_head; n = n->my_next_node )
-            ++i;
-        __TBB_ASSERT( my_size == i, "Wrong size" );
-#endif /* TBB_USE_ASSERT >= 2 */
+    T& item() const {
+      return intrusive_list_base::item(my_pos);
     }
+
+  public:
+    iterator_impl() : my_pos(NULL) {}
+
+    Iterator& operator=(const Iterator& it) {
+      return my_pos = it.my_pos;
+    }
+
+    Iterator& operator=(const T& val) {
+      return my_pos = &node(val);
+    }
+
+    bool operator==(const Iterator& it) const {
+      return my_pos == it.my_pos;
+    }
+
+    bool operator!=(const Iterator& it) const {
+      return my_pos != it.my_pos;
+    }
+
+    Iterator& operator++() {
+      my_pos = my_pos->my_next_node;
+      return self();
+    }
+
+    Iterator& operator--() {
+      my_pos = my_pos->my_prev_node;
+      return self();
+    }
+
+    Iterator operator++(int) {
+      Iterator result = self();
+      ++(*this);
+      return result;
+    }
+
+    Iterator operator--(int) {
+      Iterator result = self();
+      --(*this);
+      return result;
+    }
+  }; // intrusive_list_base::iterator_impl
+
+  void assert_ok() const {
+    __TBB_ASSERT((my_head.my_prev_node == &my_head && !my_size) ||
+                 (my_head.my_next_node != &my_head && my_size > 0), "intrusive_list_base corrupted");
+#if TBB_USE_ASSERT >= 2
+    size_t i = 0;
+    for ( intrusive_list_node *n = my_head.my_next_node; n != &my_head; n = n->my_next_node )
+        ++i;
+    __TBB_ASSERT( my_size == i, "Wrong size" );
+#endif /* TBB_USE_ASSERT >= 2 */
+  }
 
 public:
-    class iterator : public iterator_impl<iterator> {
-        template <class U, class V> friend class intrusive_list_base;
-    public:
-        iterator (intrusive_list_node* pos )
-            : iterator_impl<iterator>(pos )
-        {}
-        iterator () {}
+  class iterator : public iterator_impl<iterator> {
+    template<class U, class V> friend
+    class intrusive_list_base;
 
-        T* operator-> () const { return &this->item(); }
+  public:
+    iterator(intrusive_list_node* pos)
+        : iterator_impl<iterator>(pos) {}
 
-        T& operator* () const { return this->item(); }
-    }; // class iterator
+    iterator() {}
 
-    class const_iterator : public iterator_impl<const_iterator> {
-        template <class U, class V> friend class intrusive_list_base;
-    public:
-        const_iterator (const intrusive_list_node* pos )
-            : iterator_impl<const_iterator>(const_cast<intrusive_list_node*>(pos) )
-        {}
-        const_iterator () {}
+    T* operator->() const { return &this->item(); }
 
-        const T* operator-> () const { return &this->item(); }
+    T& operator*() const { return this->item(); }
+  }; // class iterator
 
-        const T& operator* () const { return this->item(); }
-    }; // class iterator
+  class const_iterator : public iterator_impl<const_iterator> {
+    template<class U, class V> friend
+    class intrusive_list_base;
 
-    intrusive_list_base () : my_size(0) {
-        my_head.my_prev_node = &my_head;
-        my_head.my_next_node = &my_head;
-    }
+  public:
+    const_iterator(const intrusive_list_node* pos)
+        : iterator_impl<const_iterator>(const_cast<intrusive_list_node*>(pos)) {}
 
-    bool empty () const { return my_head.my_next_node == &my_head; }
+    const_iterator() {}
 
-    size_t size () const { return my_size; }
+    const T* operator->() const { return &this->item(); }
 
-    iterator begin () { return iterator(my_head.my_next_node); }
+    const T& operator*() const { return this->item(); }
+  }; // class iterator
 
-    iterator end () { return iterator(&my_head); }
+  intrusive_list_base() : my_size(0) {
+    my_head.my_prev_node = &my_head;
+    my_head.my_next_node = &my_head;
+  }
 
-    const_iterator begin () const { return const_iterator(my_head.my_next_node); }
+  bool empty() const { return my_head.my_next_node == &my_head; }
 
-    const_iterator end () const { return const_iterator(&my_head); }
+  size_t size() const { return my_size; }
 
-    void push_front ( T& val ) {
-        __TBB_ASSERT( node(val).my_prev_node == &node(val) && node(val).my_next_node == &node(val), 
-                    "Object with intrusive list node can be part of only one intrusive list simultaneously" );
-        // An object can be part of only one intrusive list at the given moment via the given node member 
-        node(val).my_prev_node = &my_head;
-        node(val).my_next_node = my_head.my_next_node;
-        my_head.my_next_node->my_prev_node = &node(val);
-        my_head.my_next_node = &node(val);
-        ++my_size;
-        assert_ok();
-    }
+  iterator begin() { return iterator(my_head.my_next_node); }
 
-    void remove( T& val ) {
-        __TBB_ASSERT( node(val).my_prev_node != &node(val) && node(val).my_next_node != &node(val), "Element to remove is not in the list" );
-        __TBB_ASSERT( node(val).my_prev_node->my_next_node == &node(val) && node(val).my_next_node->my_prev_node == &node(val), "Element to remove is not in the list" );
-        --my_size;
-        node(val).my_next_node->my_prev_node = node(val).my_prev_node;
-        node(val).my_prev_node->my_next_node = node(val).my_next_node;
+  iterator end() { return iterator(&my_head); }
+
+  const_iterator begin() const { return const_iterator(my_head.my_next_node); }
+
+  const_iterator end() const { return const_iterator(&my_head); }
+
+  void push_front(T& val) {
+    __TBB_ASSERT(node(val).my_prev_node == &node(val) && node(val).my_next_node == &node(val),
+                 "Object with intrusive list node can be part of only one intrusive list simultaneously");
+    // An object can be part of only one intrusive list at the given moment via the given node member
+    node(val).my_prev_node = &my_head;
+    node(val).my_next_node = my_head.my_next_node;
+    my_head.my_next_node->my_prev_node = &node(val);
+    my_head.my_next_node = &node(val);
+    ++my_size;
+    assert_ok();
+  }
+
+  void remove(T& val) {
+    __TBB_ASSERT(node(val).my_prev_node != &node(val) && node(val).my_next_node != &node(val),
+                 "Element to remove is not in the list");
+    __TBB_ASSERT(
+        node(val).my_prev_node->my_next_node == &node(val) && node(val).my_next_node->my_prev_node == &node(val),
+        "Element to remove is not in the list");
+    --my_size;
+    node(val).my_next_node->my_prev_node = node(val).my_prev_node;
+    node(val).my_prev_node->my_next_node = node(val).my_next_node;
 #if TBB_USE_ASSERT
-        node(val).my_prev_node = node(val).my_next_node = &node(val);
+    node(val).my_prev_node = node(val).my_next_node = &node(val);
 #endif
-        assert_ok();
-    }
+    assert_ok();
+  }
 
-    iterator erase ( iterator it ) {
-        T& val = *it;
-        ++it;
-        remove( val );
-        return it;
-    }
+  iterator erase(iterator it) {
+    T& val = *it;
+    ++it;
+    remove(val);
+    return it;
+  }
 
 }; // intrusive_list_base
 
@@ -209,20 +215,19 @@ public:
     memory allocation when forming lists of existing objects.
 
     The class is not thread safe. **/
-template <class T, class U, intrusive_list_node U::*NodePtr>
-class memptr_intrusive_list : public intrusive_list_base<memptr_intrusive_list<T, U, NodePtr>, T>
-{
-    friend class intrusive_list_base<memptr_intrusive_list<T, U, NodePtr>, T>;
+template<class T, class U, intrusive_list_node U::*NodePtr>
+class memptr_intrusive_list : public intrusive_list_base<memptr_intrusive_list<T, U, NodePtr>, T> {
+  friend class intrusive_list_base<memptr_intrusive_list<T, U, NodePtr>, T>;
 
-    static intrusive_list_node& node ( T& val ) { return val.*NodePtr; }
+  static intrusive_list_node& node(T& val) { return val.*NodePtr; }
 
-    static T& item ( intrusive_list_node* node ) {
-        // Cannot use __TBB_offsetof (and consequently __TBB_get_object_ref) macro 
-        // with *NodePtr argument because gcc refuses to interpret pasted "->" and "*"
-        // as member pointer dereferencing operator, and explicit usage of ## in 
-        // __TBB_offsetof implementation breaks operations with normal member names.
-        return *reinterpret_cast<T*>((char*)node - ((ptrdiff_t)&(reinterpret_cast<T*>(0x1000)->*NodePtr) - 0x1000));
-    }
+  static T& item(intrusive_list_node* node) {
+    // Cannot use __TBB_offsetof (and consequently __TBB_get_object_ref) macro
+    // with *NodePtr argument because gcc refuses to interpret pasted "->" and "*"
+    // as member pointer dereferencing operator, and explicit usage of ## in
+    // __TBB_offsetof implementation breaks operations with normal member names.
+    return *reinterpret_cast<T*>((char*) node - ((ptrdiff_t) & (reinterpret_cast<T*>(0x1000)->*NodePtr) - 0x1000));
+  }
 }; // intrusive_list<T, U, NodePtr>
 
 //! Double linked list of items of type T that is derived from intrusive_list_node class.
@@ -230,14 +235,13 @@ class memptr_intrusive_list : public intrusive_list_base<memptr_intrusive_list<T
     memory allocation when forming lists of existing objects.
 
     The class is not thread safe. **/
-template <class T>
-class intrusive_list : public intrusive_list_base<intrusive_list<T>, T>
-{
-    friend class intrusive_list_base<intrusive_list<T>, T>;
+template<class T>
+class intrusive_list : public intrusive_list_base<intrusive_list<T>, T> {
+  friend class intrusive_list_base<intrusive_list<T>, T>;
 
-    static intrusive_list_node& node ( T& val ) { return val; }
+  static intrusive_list_node& node(T& val) { return val; }
 
-    static T& item ( intrusive_list_node* node ) { return *static_cast<T*>(node); }
+  static T& item(intrusive_list_node* node) { return *static_cast<T*>(node); }
 }; // intrusive_list<T>
 
 } // namespace internal

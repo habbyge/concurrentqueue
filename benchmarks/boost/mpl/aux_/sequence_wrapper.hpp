@@ -34,7 +34,8 @@
 #   undef LONG_MAX
 #endif
 
-namespace boost { namespace mpl {
+namespace boost {
+namespace mpl {
 
 #if !defined(AUX778076_SEQUENCE_BASE_NAME)
 #   define AUX778076_SEQUENCE_BASE_NAME AUX778076_SEQUENCE_NAME
@@ -149,8 +150,8 @@ namespace boost { namespace mpl {
 #if !defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION)
 // forward declaration
 template<
-      AUX778076_SEQUENCE_DEFAULT_PARAMS()
-    >
+AUX778076_SEQUENCE_DEFAULT_PARAMS()
+>
 struct AUX778076_SEQUENCE_NAME;
 #else
 namespace aux {
@@ -161,6 +162,7 @@ struct BOOST_PP_CAT(AUX778076_SEQUENCE_NAME,_chooser);
 
 #define BOOST_PP_ITERATION_PARAMS_1 \
     (3,(0, AUX778076_SEQUENCE_LIMIT, <boost/mpl/aux_/sequence_wrapper.hpp>))
+
 #include BOOST_PP_ITERATE()
 
 // real C++ version is already taken care of

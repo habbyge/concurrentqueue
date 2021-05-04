@@ -19,8 +19,9 @@
 */
 
 #include "tbb/tbb_config.h"
+
 #if !__TBB_ARENA_OBSERVER
-    #error __TBB_ARENA_OBSERVER must be defined
+#error __TBB_ARENA_OBSERVER must be defined
 #endif
 
 #if __TBB_SCHEDULER_OBSERVER

@@ -3,68 +3,68 @@
 #ifndef DLIB_MAP_PAIr_INTERFACE_
 #define DLIB_MAP_PAIr_INTERFACE_
 
-namespace dlib
-{
+namespace dlib {
 
 // ----------------------------------------------------------------------------------------
-    
-    template <
-        typename T1,
-        typename T2
-        >
-    class map_pair  
-    {
-        /*!
-            POINTERS AND REFERENCES TO INTERNAL DATA
-                None of the functions in map_pair will invalidate
-                pointers or references to internal data when called.
 
-            WHAT THIS OBJECT REPRESENTS
-                this object is used to return the key/value pair used in the 
-                map and hash_map containers when using the enumerable interface.
+template<
+    typename T1,
+    typename T2
+>
+class map_pair {
+  /*!
+      POINTERS AND REFERENCES TO INTERNAL DATA
+          None of the functions in map_pair will invalidate
+          pointers or references to internal data when called.
 
-                note that the enumerable interface is defined in
-                interfaces/enumerable.h
-        !*/
+      WHAT THIS OBJECT REPRESENTS
+          this object is used to return the key/value pair used in the
+          map and hash_map containers when using the enumerable interface.
 
-    public:
-        typedef T1 key_type;
-        typedef T2 value_type;
+          note that the enumerable interface is defined in
+          interfaces/enumerable.h
+  !*/
 
-        virtual ~map_pair(
-        )=0;
+public:
+  typedef T1 key_type;
+  typedef T2 value_type;
 
-        virtual const T1& key( 
-        ) const =0;
-        /*!
-            ensures
-                - returns a const reference to the key
-        !*/
+  virtual ~map_pair(
+  ) = 0;
 
-        virtual const T2& value(
-        ) const =0;
-        /*!
-            ensures
-                - returns a const reference to the value associated with key
-        !*/
+  virtual const T1& key(
+  ) const = 0;
 
-        virtual T2& value(
-        )=0;
-        /*!
-            ensures
-                - returns a non-const reference to the value associated with key
-        !*/
+  /*!
+      ensures
+          - returns a const reference to the key
+  !*/
 
-    protected:
+  virtual const T2& value(
+  ) const = 0;
 
-        // restricted functions
-        map_pair<T1,T2>& operator=(const map_pair<T1,T2>&) {return *this;} // no assignment operator
+  /*!
+      ensures
+          - returns a const reference to the value associated with key
+  !*/
 
-    };
+  virtual T2& value(
+  ) = 0;
+  /*!
+      ensures
+          - returns a non-const reference to the value associated with key
+  !*/
 
-    // destructor does nothing
-    template <typename T1,typename T2> 
-    map_pair<T1,T2>::~map_pair () {}
+protected:
+
+  // restricted functions
+  map_pair<T1, T2>& operator=(const map_pair<T1, T2>&) { return *this; } // no assignment operator
+
+};
+
+// destructor does nothing
+template<typename T1, typename T2>
+map_pair<T1, T2>::~map_pair() {}
 
 // ----------------------------------------------------------------------------------------
 

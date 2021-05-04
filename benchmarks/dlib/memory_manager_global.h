@@ -7,31 +7,26 @@
 #include "memory_manager.h"
 
 
+namespace dlib {
 
-namespace dlib
-{
-
-    template <
-        typename T,
-        typename factory
-        >
-    class memory_manager_global
-    {
-        memory_manager_global() {}
+template<
+    typename T,
+    typename factory
+>
+class memory_manager_global {
+  memory_manager_global() {}
 
 
-    public:
-        
-        //----------- kernels ---------------
+public:
 
-        // kernel_1        
-        typedef      memory_manager_global_kernel_1<T,factory>
-                     kernel_1a;
-      
-      
-           
+  //----------- kernels ---------------
 
-    };
+  // kernel_1
+  typedef memory_manager_global_kernel_1<T, factory>
+      kernel_1a;
+
+
+};
 }
 
 #endif // DLIB_MEMORY_MANAGER_GLOBAl_

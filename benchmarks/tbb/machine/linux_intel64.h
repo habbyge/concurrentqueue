@@ -39,7 +39,7 @@
 #define __TBB_full_memory_fence() __asm__ __volatile__("mfence": : :"memory")
 #endif
 
-#define __TBB_MACHINE_DEFINE_ATOMICS(S,T,X)                                          \
+#define __TBB_MACHINE_DEFINE_ATOMICS(S, T, X)                                          \
 static inline T __TBB_machine_cmpswp##S (volatile void *ptr, T value, T comparand )  \
 {                                                                                    \
     T result;                                                                        \
@@ -71,23 +71,27 @@ static inline  T __TBB_machine_fetchstore##S(volatile void *ptr, T value)       
     return result;                                                                   \
 }                                                                                    \
 
-__TBB_MACHINE_DEFINE_ATOMICS(1,int8_t,"")
-__TBB_MACHINE_DEFINE_ATOMICS(2,int16_t,"")
-__TBB_MACHINE_DEFINE_ATOMICS(4,int32_t,"")
-__TBB_MACHINE_DEFINE_ATOMICS(8,int64_t,"q")
+
+__TBB_MACHINE_DEFINE_ATOMICS(1, int8_t, "")
+
+__TBB_MACHINE_DEFINE_ATOMICS(2, int16_t, "")
+
+__TBB_MACHINE_DEFINE_ATOMICS(4, int32_t, "")
+
+__TBB_MACHINE_DEFINE_ATOMICS(8, int64_t, "q")
 
 #undef __TBB_MACHINE_DEFINE_ATOMICS
 
-static inline void __TBB_machine_or( volatile void *ptr, uint64_t value ) {
-    __asm__ __volatile__("lock\norq %1,%0" : "=m"(*(volatile uint64_t*)ptr) : "r"(value), "m"(*(volatile uint64_t*)ptr) : "memory");
+static inline void __TBB_machine_or(volatile void* ptr, uint64_t value) {
+  __asm__ __volatile__("lock\norq %1,%0" : "=m"(*(volatile uint64_t*) ptr) : "r"(value), "m"(*(volatile uint64_t*) ptr) : "memory");
 }
 
-static inline void __TBB_machine_and( volatile void *ptr, uint64_t value ) {
-    __asm__ __volatile__("lock\nandq %1,%0" : "=m"(*(volatile uint64_t*)ptr) : "r"(value), "m"(*(volatile uint64_t*)ptr) : "memory");
+static inline void __TBB_machine_and(volatile void* ptr, uint64_t value) {
+  __asm__ __volatile__("lock\nandq %1,%0" : "=m"(*(volatile uint64_t*) ptr) : "r"(value), "m"(*(volatile uint64_t*) ptr) : "memory");
 }
 
-#define __TBB_AtomicOR(P,V) __TBB_machine_or(P,V)
-#define __TBB_AtomicAND(P,V) __TBB_machine_and(P,V)
+#define __TBB_AtomicOR(P, V) __TBB_machine_or(P,V)
+#define __TBB_AtomicAND(P, V) __TBB_machine_and(P,V)
 
 #define __TBB_USE_FETCHSTORE_AS_FULL_FENCED_STORE           1
 #define __TBB_USE_GENERIC_HALF_FENCED_LOAD_STORE            1
